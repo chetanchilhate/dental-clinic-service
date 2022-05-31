@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+      
+  
+  dc-mysql:    
+    container_name: dc-mysql
+    image: mysql:latest    
+    ports:
+      - '3306:3306'
+    environment:
+    - MYSQL_ROOT_PASSWORD=toor
+    - MYSQL_DATABASE=dental-clinic
+    - MYSQL_USER=clinic
+    - MYSQL_PASSWORD=clinic      
+    volumes:
+      - 'mysql-data:/var/lib/mysql'
+
+
+volumes:
+  mysql-data:
+    external: true
+  mysql-data:
+    external: true    
