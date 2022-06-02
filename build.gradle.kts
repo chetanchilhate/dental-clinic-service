@@ -47,3 +47,21 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+val integrationTest: SourceSet by sourceSets.creating
+
+configurations[integrationTest.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[integrationTest.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+
+dependencies {
+	"integrationTestImplementation"(project)
+}
+
+val integrationTestTask = tasks.register<Test>("integrationTest") {
+	description = "Runs the integration tests."
+	group = "verification"
+	useJUnitPlatform()
+
+	testClassesDirs = integrationTest.output.classesDirs
+	classpath = configurations[integrationTest.runtimeClasspathConfigurationName] + integrationTest.output
+}
