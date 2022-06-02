@@ -1,19 +1,22 @@
 package com.cj.dentalclinic.controller
 
-import com.cj.dentalclinic.dto.Clinic
-import org.junit.jupiter.api.Assertions.assertEquals
+import com.cj.dentalclinic.service.ClinicService
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 internal class ClinicControllerTest {
 
-  private val clinicController = ClinicController()
+  private val clinicService: ClinicService = mockk(relaxed = true)
+
+  private val clinicController = ClinicController(clinicService)
 
   @Test
-  fun `ClinicController should return list of Clinics when getAllClinics is invoked`() {
+  fun `should call ClinicService to getAll clinics`() {
 
-    val clinics:List<Clinic>  = clinicController.getAllClinics()
+    clinicController.getAllClinics()
 
-    assertEquals(2, clinics.size)
+    verify(exactly = 1) { clinicService.getAllClinics() }
 
   }
 
