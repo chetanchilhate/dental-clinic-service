@@ -1,6 +1,11 @@
 package com.cj.dentalclinic.controller
 
+import com.cj.dentalclinic.dto.Clinic
+import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.service.ClinicService
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -13,6 +18,17 @@ const val CLINIC_BASE_URI = "/api/v1/clinics"
 @WebMvcTest(ClinicController::class)
 @Import(ClinicService::class)
 internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
+
+  @MockkBean
+  private lateinit var clinicRepository: ClinicRepository
+
+  @BeforeEach
+  fun setup() {
+    every { clinicRepository.findAll() } returns listOf(
+      Clinic(1, "Sharda Dental Clinic"),
+      Clinic(2, "Smart Dental Clinic")
+    )
+  }
 
   @Test
   fun `should return 200 status code`() {
