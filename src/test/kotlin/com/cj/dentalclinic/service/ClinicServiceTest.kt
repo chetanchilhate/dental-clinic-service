@@ -1,18 +1,22 @@
 package com.cj.dentalclinic.service
 
-import org.assertj.core.api.Assertions.assertThat
+import com.cj.dentalclinic.repository.ClinicRepository
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 internal class ClinicServiceTest {
 
-  private val clinicService = ClinicService()
+  private val clinicRepository: ClinicRepository = mockk(relaxed = true)
+
+  private val clinicService = ClinicService(clinicRepository)
 
   @Test
-  fun `should return list of at least 2 Clinics`() {
+  fun `should call ClinicService to getAll clinics`() {
 
-    val clinics = clinicService.getAllClinics()
+    clinicService.getAllClinics()
 
-    assertThat(clinics.size).isGreaterThanOrEqualTo(2)
+    verify(exactly = 1) { clinicRepository.findAll() }
 
   }
 
