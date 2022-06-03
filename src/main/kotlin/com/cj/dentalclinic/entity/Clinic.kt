@@ -7,7 +7,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "t_clinic")
-data class Clinic(@Id var id: Int?, var name: String) {
+data class Clinic(@Id val id: Int?, val name: String) {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
