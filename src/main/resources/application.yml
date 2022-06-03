@@ -12,7 +12,10 @@ spring:
     password: clinic
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    hibernate:
+      ddl-auto: validate
     open-in-view: false
+    show-sql: true
 
 # ===============================
 # Management Endpoint Properties
