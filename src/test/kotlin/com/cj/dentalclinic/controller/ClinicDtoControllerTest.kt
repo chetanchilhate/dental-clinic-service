@@ -5,7 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
-internal class ClinicControllerTest {
+internal class ClinicDtoControllerTest {
 
   private val clinicService: ClinicService = mockk(relaxed = true)
 

@@ -1,6 +1,6 @@
 package com.cj.dentalclinic.controller
 
-import com.cj.dentalclinic.dto.Clinic
+import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.service.ClinicService
 import com.ninjasquad.springmockk.MockkBean
@@ -17,7 +17,7 @@ const val CLINIC_BASE_URI = "/api/v1/clinics"
 
 @WebMvcTest(ClinicController::class)
 @Import(ClinicService::class)
-internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
+internal class ClinicDtoControllerITest(@Autowired val mockMvc: MockMvc) {
 
   @MockkBean
   private lateinit var clinicRepository: ClinicRepository
@@ -25,8 +25,8 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
   @BeforeEach
   fun setup() {
     every { clinicRepository.findAll() } returns listOf(
-      Clinic(1, "Sharda Dental Clinic"),
-      Clinic(2, "Smart Dental Clinic")
+      ClinicDto(1, "Sharda Dental Clinic"),
+      ClinicDto(2, "Smart Dental Clinic")
     )
   }
 

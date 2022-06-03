@@ -5,11 +5,11 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "t_clinic")
-data class Clinic(@Id  @GeneratedValue(strategy = GenerationType.AUTO) var id: Int?, val name: String) {
+data class ClinicDto(@Id var id: Int?, val name: String) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-    other as Clinic
+    other as ClinicDto
 
     return id != null && id == other.id
   }
