@@ -2,6 +2,7 @@ package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.entity.Clinic
+import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.service.ClinicService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,5 +24,5 @@ class ClinicController(@Autowired private val clinicService: ClinicService) {
       .filter { t -> t.id == clinicId }
       .map { t -> ClinicDto(t) }
       .findFirst()
-      .orElse(ClinicDto(0, ""))
+      .orElseThrow { ResourceNotFoundException("Clinic", clinicId) }
 }
