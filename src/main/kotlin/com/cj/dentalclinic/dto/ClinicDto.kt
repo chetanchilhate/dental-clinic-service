@@ -1,23 +1,9 @@
 package com.cj.dentalclinic.dto
 
-import org.hibernate.Hibernate
-import javax.persistence.*
+import com.cj.dentalclinic.entity.Clinic
 
-@Entity
-@Table(name = "t_clinic")
-data class ClinicDto(@Id var id: Int?, val name: String) {
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-    other as ClinicDto
+data class ClinicDto(var id: Int?, val name: String) {
 
-    return id != null && id == other.id
-  }
+  constructor(clinic: Clinic) : this(clinic.id, clinic.name)
 
-  override fun hashCode(): Int = javaClass.hashCode()
-
-  @Override
-  override fun toString(): String {
-    return this::class.simpleName + "(id = $id, name = $name)"
-  }
 }

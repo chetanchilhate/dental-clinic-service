@@ -10,6 +10,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
 
-  fun getAllClinics(): List<ClinicDto> = clinicRepository.findAll()
+  fun getAllClinics(): List<ClinicDto> = clinicRepository
+    .findAll()
+    .stream()
+    .map { t -> ClinicDto(t) }
+    .toList()
 
 }
