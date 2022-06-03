@@ -46,4 +46,14 @@ internal class ClinicDtoControllerITest(@Autowired val mockMvc: MockMvc) {
       }
   }
 
+  @Test
+  fun `given id should return 200 status and a json of Clinic`() {
+    val id = 2
+    mockMvc.get("$CLINIC_BASE_URI/$id")
+      .andExpect {
+        status { isOk() }
+        content { json("""{"id":2,"name":"Smart Dental Clinic"}""") }
+      }
+  }
+
 }
