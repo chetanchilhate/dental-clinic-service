@@ -17,4 +17,5 @@ class ClinicController(@Autowired private val clinicService: ClinicService) {
 
   @GetMapping("/{id}")
   fun getClinicById(@PathVariable("id") clinicId: Int): ClinicDto = clinicService.getClinicById(clinicId)
+
 }
