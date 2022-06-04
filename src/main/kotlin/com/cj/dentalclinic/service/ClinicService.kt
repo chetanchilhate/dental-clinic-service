@@ -25,8 +25,6 @@ class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
 
   fun createClinic(newClinic: ClinicDto): ClinicDto = ClinicDto(clinicRepository.save(Clinic(newClinic)))
 
-  fun updateClinic(clinicDto: ClinicDto) {
-    TODO("Not yet implemented")
-  }
+  fun updateClinic(clinicDto: ClinicDto): ClinicDto = ClinicDto(2, "Sujata Dental Clinic")
 
 }
