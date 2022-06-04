@@ -1,6 +1,5 @@
 package com.cj.dentalclinic.controller
 
-import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.service.ClinicService
 import io.mockk.mockk
@@ -16,7 +15,7 @@ internal class ClinicControllerTest {
   private val clinicController = ClinicController(clinicService)
 
   @Test
-  fun `should call ClinicService to getAll clinics`() {
+  fun `should call ClinicService to get all clinics`() {
 
     clinicController.getAllClinics()
 
@@ -29,7 +28,7 @@ internal class ClinicControllerTest {
 
     val clinicId = 2
 
-    val clinicDto: ClinicDto =  clinicController.getClinicById(clinicId)
+    val clinicDto = clinicController.getClinicById(clinicId)
 
     assertThat(clinicDto.id).isEqualTo(clinicId)
 
@@ -45,6 +44,17 @@ internal class ClinicControllerTest {
     assertThatThrownBy { clinicController.getClinicById(clinicId) }
       .isInstanceOf(ResourceNotFoundException::class.java)
       .hasMessage("No Clinic found with id : $clinicId")
+  }
+
+
+  @Test
+  fun `should call ClinicService to get Clinic with given id`() {
+
+    val clinicId = 2
+
+    clinicController.getClinicById(clinicId)
+
+    verify(exactly = 1) { clinicService.getClinicById(clinicId) }
   }
 
 }

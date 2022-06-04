@@ -16,4 +16,6 @@ class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
     .map { t -> ClinicDto(t) }
     .toList()
 
+  fun getClinicById(clinicId: Int): ClinicDto = ClinicDto(0, "")
+
 }
