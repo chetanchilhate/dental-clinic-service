@@ -25,6 +25,8 @@ class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
 
   fun createClinic(newClinic: ClinicDto): ClinicDto = ClinicDto(clinicRepository.save(Clinic(newClinic)))
 
-  fun updateClinic(clinicDto: ClinicDto): ClinicDto = ClinicDto(2, "Sujata Dental Clinic")
+  fun updateClinic(updatedClinic: ClinicDto): ClinicDto =
+    if (clinicRepository.existsById(updatedClinic.id!!)) ClinicDto(clinicRepository.save(Clinic(updatedClinic)))
+    else throw ResourceNotFoundException("Clinic", updatedClinic.id)
 
 }

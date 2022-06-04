@@ -4,6 +4,7 @@ import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.ClinicRepository
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -102,11 +103,49 @@ internal class ClinicServiceTest {
     @Test
     fun `should return saved Clinic with generated id and given name`() {
 
-      val clinicDto  = clinicService.createClinic(ClinicDto(newClinic))
+      val clinicDto = clinicService.createClinic(ClinicDto(newClinic))
 
       assertThat(clinicDto.id).isEqualTo(newClinicId)
 
       assertThat(clinicDto.name).isEqualTo(newClinic.name)
+
+    }
+
+  }
+
+  @Nested
+  @DisplayName("updateClinic(clinic: ClinicDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class UpdateClinic {
+
+    private val updatedClinic = Clinic(2, "Sujata Dental Clinic")
+
+    @BeforeEach
+    internal fun setUp() {
+      clearMocks(clinicRepository)
+    }
+
+    @Test
+    fun `should call ClinicRepository to update Clinic when Clinic exists`() {
+
+      every { clinicRepository.existsById(updatedClinic.id!!) } returns true
+
+      every { clinicRepository.save(updatedClinic) } returns updatedClinic
+
+      clinicService.updateClinic(ClinicDto(updatedClinic))
+
+      verify(exactly = 1) { clinicRepository.save(updatedClinic) }
+
+    }
+
+    @Test
+    fun `should throw ResourceNotFoundException when Clinic does not exists`() {
+
+      verify(exactly = 0) { clinicRepository.save(updatedClinic) }
+
+      assertThatThrownBy { clinicService.updateClinic(ClinicDto(updatedClinic)) }
+        .isInstanceOf(ResourceNotFoundException::class.java)
+        .hasMessage("No Clinic found with id : ${updatedClinic.id}")
 
     }
 
