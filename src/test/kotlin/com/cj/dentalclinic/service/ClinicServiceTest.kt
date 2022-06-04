@@ -121,6 +121,8 @@ internal class ClinicServiceTest {
 
     private val updatedClinic = Clinic(2, "Sujata Dental Clinic")
 
+    private val existingClinicId = 3
+
     @BeforeEach
     internal fun setUp() {
       clearMocks(clinicRepository)
@@ -129,11 +131,11 @@ internal class ClinicServiceTest {
     @Test
     fun `should call ClinicRepository to update Clinic when Clinic exists`() {
 
-      every { clinicRepository.existsById(updatedClinic.id!!) } returns true
+      every { clinicRepository.existsById(existingClinicId) } returns true
 
       every { clinicRepository.save(updatedClinic) } returns updatedClinic
 
-      clinicService.updateClinic(1, ClinicDto(updatedClinic))
+      clinicService.updateClinic(existingClinicId, ClinicDto(updatedClinic))
 
       verify(exactly = 1) { clinicRepository.save(updatedClinic) }
 
@@ -144,7 +146,7 @@ internal class ClinicServiceTest {
 
       verify(exactly = 0) { clinicRepository.save(updatedClinic) }
 
-      assertThatThrownBy { clinicService.updateClinic(1, ClinicDto(updatedClinic)) }
+      assertThatThrownBy { clinicService.updateClinic(existingClinicId, ClinicDto(updatedClinic)) }
         .isInstanceOf(ResourceNotFoundException::class.java)
         .hasMessage("No Clinic found with id : ${updatedClinic.id}")
 
