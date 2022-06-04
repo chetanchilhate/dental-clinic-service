@@ -44,7 +44,7 @@ internal class ClinicDtoControllerTest {
 
     assertThatThrownBy { clinicController.getClinicById(clinicId) }
       .isInstanceOf(ResourceNotFoundException::class.java)
-      .hasMessage("No Clinic found with given id : $clinicId")
+      .hasMessage("No Clinic found with id : $clinicId")
   }
 
 }
