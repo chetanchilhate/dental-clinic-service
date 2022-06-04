@@ -20,4 +20,8 @@ class ClinicController(@Autowired private val clinicService: ClinicService) {
   @ResponseStatus( HttpStatus.CREATED )
   fun createClinic(@RequestBody newClinic: ClinicDto): ClinicDto = clinicService.createClinic(ClinicDto(name = newClinic.name))
 
+  fun updateClinic(clinicDto: ClinicDto) {
+    TODO("Not yet implemented")
+  }
+
 }

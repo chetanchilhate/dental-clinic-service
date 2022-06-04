@@ -43,4 +43,15 @@ internal class ClinicControllerTest {
 
   }
 
+  @Test
+  fun `should call ClinicService to update Clinic with given ClinicDto`() {
+
+    val clinicDto = ClinicDto(2, "Sujata Dental Clinic")
+
+    clinicController.updateClinic(clinicDto)
+
+    verify(exactly = 1) { clinicService.updateClinic(clinicDto) }
+
+  }
+
 }
