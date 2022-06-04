@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.service
 
+import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.ClinicRepository
@@ -70,6 +71,42 @@ internal class ClinicServiceTest {
       clinicService.getClinicById(clinicIdWithClinic)
 
       verify(exactly = 1) { clinicRepository.findById(clinicIdWithClinic) }
+
+    }
+
+  }
+
+  @Nested
+  @DisplayName("createClinic(clinic: ClinicDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class CreateClinic {
+
+    private val newClinicId = 4
+
+    private val newClinic = Clinic(name = "Sujata Dental Clinic")
+
+    @BeforeEach
+    internal fun setUp() {
+      every { clinicRepository.save(newClinic) } returns newClinic.copy(newClinicId)
+    }
+
+    @Test
+    fun `should call ClinicRepository to save new Clinic`() {
+
+      clinicService.createClinic(ClinicDto(newClinic))
+
+      verify(exactly = 1) { clinicRepository.save(newClinic) }
+
+    }
+
+    @Test
+    fun `should return saved Clinic with generated id and given name`() {
+
+      val clinicDto  = clinicService.createClinic(ClinicDto(newClinic))
+
+      assertThat(clinicDto.id).isEqualTo(newClinicId)
+
+      assertThat(clinicDto.name).isEqualTo(newClinic.name)
 
     }
 
