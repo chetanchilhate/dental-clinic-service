@@ -1,7 +1,6 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.dto.ClinicDto
-import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.service.ClinicService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -21,8 +20,6 @@ class ClinicController(@Autowired private val clinicService: ClinicService) {
   @ResponseStatus( HttpStatus.CREATED )
   fun createClinic(@RequestBody newClinic: ClinicDto): ClinicDto = clinicService.createClinic(ClinicDto(name = newClinic.name))
 
-  fun updateClinic(clinic: ClinicDto): ClinicDto =
-    if (clinic.id == null) throw ResourceNotFoundException("Clinic", null)
-    else clinicService.updateClinic(clinic)
+  fun updateClinic(id: Int, clinic: ClinicDto): ClinicDto = clinicService.updateClinic(id, clinic)
 
 }

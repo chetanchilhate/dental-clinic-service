@@ -133,7 +133,7 @@ internal class ClinicServiceTest {
 
       every { clinicRepository.save(updatedClinic) } returns updatedClinic
 
-      clinicService.updateClinic(ClinicDto(updatedClinic))
+      clinicService.updateClinic(1, ClinicDto(updatedClinic))
 
       verify(exactly = 1) { clinicRepository.save(updatedClinic) }
 
@@ -144,7 +144,7 @@ internal class ClinicServiceTest {
 
       verify(exactly = 0) { clinicRepository.save(updatedClinic) }
 
-      assertThatThrownBy { clinicService.updateClinic(ClinicDto(updatedClinic)) }
+      assertThatThrownBy { clinicService.updateClinic(1, ClinicDto(updatedClinic)) }
         .isInstanceOf(ResourceNotFoundException::class.java)
         .hasMessage("No Clinic found with id : ${updatedClinic.id}")
 
