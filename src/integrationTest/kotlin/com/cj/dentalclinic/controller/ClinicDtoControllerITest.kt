@@ -56,4 +56,14 @@ internal class ClinicDtoControllerITest(@Autowired val mockMvc: MockMvc) {
       }
   }
 
+  @Test
+  fun `given id should return 404 status and a json of ErrorResponse`() {
+    val id = 4
+    mockMvc.get("$CLINIC_BASE_URI/$id")
+      .andExpect {
+        status { isNotFound() }
+        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+      }
+  }
+
 }
