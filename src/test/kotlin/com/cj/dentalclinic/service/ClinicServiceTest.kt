@@ -41,7 +41,8 @@ internal class ClinicServiceTest {
     @BeforeEach
     fun setup() {
 
-      every { clinicRepository.findById(clinicIdWithClinic) } returns of(Clinic(clinicIdWithClinic, "Smart Dental Clinic"))
+      every { clinicRepository.findById(clinicIdWithClinic) } returns
+          of(Clinic(clinicIdWithClinic, "Smart Dental Clinic"))
 
       every { clinicRepository.findById(clinicIdWithOutClinic) } returns empty()
 
