@@ -9,8 +9,10 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 
 const val CLINIC_BASE_URI = "/api/v1/clinics"
 
@@ -85,6 +87,36 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
     }
 
     private fun findClinicById(id: Int) = clinics.stream().filter { t -> t.id == id }.findFirst()
+
+  }
+
+  @Nested
+  @DisplayName("createClinic(newClinic: ClinicDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class CreateClinic {
+
+    @Test
+    fun `should return 201 status and json of clinic with generated id and given name`() {
+
+      val newClinicId = 4
+
+      val newClinic = Clinic(name = "Sujata Dental Clinic")
+
+      every { clinicRepository.save(newClinic) } returns newClinic.copy(newClinicId)
+
+      mockMvc.post(CLINIC_BASE_URI) {
+
+        contentType = MediaType.APPLICATION_JSON
+
+        content = """{"name":"${newClinic.name}"}"""
+
+      }.andExpect {
+
+          status { isCreated() }
+
+          content { json("""{"id":$newClinicId,"name":"${newClinic.name}"}""") }
+        }
+    }
 
   }
 
