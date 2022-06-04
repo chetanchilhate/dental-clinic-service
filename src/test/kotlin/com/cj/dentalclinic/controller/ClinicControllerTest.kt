@@ -9,7 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
-internal class ClinicDtoControllerTest {
+internal class ClinicControllerTest {
 
   private val clinicService: ClinicService = mockk(relaxed = true)
 
