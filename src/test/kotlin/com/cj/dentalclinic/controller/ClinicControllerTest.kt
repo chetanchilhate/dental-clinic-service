@@ -1,9 +1,11 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.dto.ClinicDto
+import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.service.ClinicService
 import io.mockk.mockk
 import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class ClinicControllerTest {
@@ -51,6 +53,17 @@ internal class ClinicControllerTest {
     clinicController.updateClinic(clinicDto)
 
     verify(exactly = 1) { clinicService.updateClinic(clinicDto) }
+
+  }
+
+  @Test
+  fun `updateClinic should throw ResourceNotFoundException when given id is null`() {
+
+    val clinicDto = ClinicDto(name = "Sujata Dental Clinic")
+
+    assertThatThrownBy { clinicController.updateClinic(clinicDto) }
+      .isInstanceOf(ResourceNotFoundException::class.java)
+      .hasMessage("No Clinic found with id : ${clinicDto.id}")
 
   }
 
