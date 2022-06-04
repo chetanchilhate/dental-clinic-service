@@ -1,6 +1,7 @@
 package com.cj.dentalclinic.service
 
 import com.cj.dentalclinic.dto.ClinicDto
+import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.ClinicRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,5 +22,7 @@ class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
     .findById(clinicId)
     .map { t -> ClinicDto(t) }
     .orElseThrow { ResourceNotFoundException("Clinic", clinicId) }
+
+  fun createClinic(newClinic: ClinicDto): ClinicDto = ClinicDto(clinicRepository.save(Clinic(newClinic)))
 
 }
