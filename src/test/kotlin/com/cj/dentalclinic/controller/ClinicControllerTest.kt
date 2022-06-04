@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.controller
 
+import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.service.ClinicService
 import io.mockk.mockk
 import io.mockk.verify
@@ -28,6 +29,17 @@ internal class ClinicControllerTest {
     clinicController.getClinicById(clinicId)
 
     verify(exactly = 1) { clinicService.getClinicById(clinicId) }
+
+  }
+
+  @Test
+  fun `should call ClinicService to create Clinic with given ClinicDto`() {
+
+    val clinicDto = ClinicDto(name = "Sujata Dental Clinic")
+
+    clinicController.createClinic(clinicDto)
+
+    verify(exactly = 1) { clinicService.createClinic(clinicDto) }
 
   }
 
