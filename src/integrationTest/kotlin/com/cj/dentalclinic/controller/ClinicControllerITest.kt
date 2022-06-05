@@ -6,15 +6,13 @@ import com.cj.dentalclinic.service.ClinicService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.justRun
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 
 const val CLINIC_BASE_URI = "/api/v1/clinics"
 
@@ -171,6 +169,50 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
         content = """{"id":$id,"name":"${updatedClinic.name}"}"""
 
       }.andExpect {
+
+        status { isNotFound() }
+
+        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+      }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("deleteClinic(id: Int)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class DeleteClinic {
+
+    private val id = 4
+
+    @BeforeEach
+    internal fun setUp() {
+      clearMocks(clinicRepository)
+    }
+
+    @Test
+    fun `should return 200 status and empty json when clinic exists`() {
+
+      every { clinicRepository.existsById(id) } returns true
+
+      justRun { clinicRepository.deleteById(id) }
+
+      mockMvc.delete("$CLINIC_BASE_URI/$id")
+        .andExpect {
+
+        status { isOk() }
+
+        content { json("{}") }
+      }
+    }
+
+    @Test
+    fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
+
+      every { clinicRepository.existsById(id) } returns false
+
+      mockMvc.delete("$CLINIC_BASE_URI/$id")
+        .andExpect {
 
         status { isNotFound() }
 

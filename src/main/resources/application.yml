@@ -16,6 +16,10 @@ spring:
       ddl-auto: validate
     open-in-view: false
     show-sql: true
+  jackson:
+    default-property-inclusion:
+    - non_null
+    - non_empty
 
 # ===============================
 # Management Endpoint Properties

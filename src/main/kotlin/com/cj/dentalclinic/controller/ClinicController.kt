@@ -1,6 +1,7 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.dto.ClinicDto
+import com.cj.dentalclinic.dto.EmptyResponse
 import com.cj.dentalclinic.service.ClinicService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -25,6 +26,10 @@ class ClinicController(@Autowired private val clinicService: ClinicService) {
   fun updateClinic(@PathVariable("id") clinicId: Int, @RequestBody clinic: ClinicDto): ClinicDto =
     clinicService.updateClinic(clinicId, clinic.copy(id = clinicId))
 
-  fun deleteClinic(id: Int) = clinicService.deleteClinic(id)
+  @DeleteMapping("/{id}")
+  fun deleteClinic(@PathVariable("id") clinicId: Int): EmptyResponse {
+    clinicService.deleteClinic(clinicId)
+    return EmptyResponse()
+  }
 
 }
