@@ -3,7 +3,6 @@ package com.cj.dentalclinic.entity
 import com.cj.dentalclinic.dto.ClinicDto
 import org.hibernate.Hibernate
 import javax.persistence.*
-import javax.persistence.CascadeType.ALL
 import javax.persistence.GenerationType.IDENTITY
 
 @Entity
@@ -15,10 +14,9 @@ data class Clinic(
   val id: Int? = null,
 
   @Column(nullable = false)
-  val name: String,
+  val name: String
 
-  @OneToMany(mappedBy = "clinic", cascade = [ALL], orphanRemoval = true)
-  val treatments: Set<Treatment> = mutableSetOf()) {
+) {
 
   constructor(clinicDto: ClinicDto) : this(clinicDto.id, clinicDto.name)
 

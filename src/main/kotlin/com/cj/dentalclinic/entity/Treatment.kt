@@ -18,16 +18,18 @@ data class Treatment(
 
   val fee: Double = 0.00,
 
-  @ManyToOne(fetch = LAZY)
+  @ManyToOne(fetch = LAZY, optional = false)
   @JoinColumn(name = "clinic_id", nullable = false)
-  var clinic: Clinic?) {
+  val clinic: Clinic?
+
+) {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
     other as Treatment
 
-    return if(id != null) id == other.id else name == other.name
+    return if (id != null) id == other.id else name == other.name
   }
 
   override fun hashCode(): Int = javaClass.hashCode()
