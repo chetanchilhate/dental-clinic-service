@@ -4,15 +4,17 @@ import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.service.ClinicService
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.clearMocks
 import io.mockk.every
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 
 const val CLINIC_BASE_URI = "/api/v1/clinics"
 
@@ -106,7 +108,7 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
       mockMvc.post(CLINIC_BASE_URI) {
 
-        contentType = MediaType.APPLICATION_JSON
+        contentType = APPLICATION_JSON
 
         content = """{"name":"${newClinic.name}"}"""
 
@@ -116,6 +118,64 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
           content { json("""{"id":$newClinicId,"name":"${newClinic.name}"}""") }
         }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("updateClinic(id: Int, clinic: ClinicDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class UpdateClinic {
+
+    @BeforeEach
+    internal fun setUp() {
+      clearMocks(clinicRepository)
+    }
+
+    @Test
+    fun `should return 201 status and json of updated clinic when clinic exists`() {
+
+      val id = 4
+      val updatedClinic = Clinic(id, "Sujata Dental Clinic")
+
+      every { clinicRepository.existsById(id) } returns true
+
+      every { clinicRepository.save(updatedClinic) } returns updatedClinic
+
+      mockMvc.put("$CLINIC_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":"${updatedClinic.name}"}"""
+
+      }.andExpect {
+
+        status { isCreated() }
+
+        content { json("""{"id":$id,"name":"${updatedClinic.name}"}""") }
+      }
+    }
+
+    @Test
+    fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
+
+      val id = 4
+      val updatedClinic = Clinic(id, "Sujata Dental Clinic")
+
+      every { clinicRepository.existsById(id) } returns false
+
+      mockMvc.put("$CLINIC_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":"${updatedClinic.name}"}"""
+
+      }.andExpect {
+
+        status { isNotFound() }
+
+        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+      }
     }
 
   }

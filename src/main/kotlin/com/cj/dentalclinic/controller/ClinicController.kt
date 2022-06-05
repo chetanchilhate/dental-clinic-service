@@ -20,6 +20,8 @@ class ClinicController(@Autowired private val clinicService: ClinicService) {
   @ResponseStatus( HttpStatus.CREATED )
   fun createClinic(@RequestBody newClinic: ClinicDto): ClinicDto = clinicService.createClinic(ClinicDto(name = newClinic.name))
 
-  fun updateClinic(id: Int, clinic: ClinicDto): ClinicDto = clinicService.updateClinic(id, clinic)
+  @PutMapping("/{id}")
+  @ResponseStatus( HttpStatus.CREATED )
+  fun updateClinic(@PathVariable("id") clinicId: Int, @RequestBody clinic: ClinicDto): ClinicDto = clinicService.updateClinic(clinicId, clinic.copy(clinicId))
 
 }
