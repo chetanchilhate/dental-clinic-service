@@ -23,11 +23,11 @@ class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
     .map { t -> ClinicDto(t) }
     .orElseThrow { ResourceNotFoundException("Clinic", clinicId) }
 
-  fun createClinic(newClinic: ClinicDto): ClinicDto = ClinicDto(clinicRepository.save(Clinic(newClinic)))
+  fun createClinic(newClinic: ClinicDto) = ClinicDto(clinicRepository.save(Clinic(newClinic)))
 
-  fun updateClinic(clinicId: Int, updatedClinic: ClinicDto): ClinicDto =
+  fun updateClinic(clinicId: Int, updatedClinic: ClinicDto) =
     if (clinicRepository.existsById(clinicId)) ClinicDto(clinicRepository.save(Clinic(updatedClinic)))
-    else throw ResourceNotFoundException("Clinic", updatedClinic.id)
+    else throw ResourceNotFoundException("Clinic", clinicId)
 
   fun deleteClinic(clinicId: Int) =
     if (clinicRepository.existsById(clinicId)) clinicRepository.deleteById(clinicId)

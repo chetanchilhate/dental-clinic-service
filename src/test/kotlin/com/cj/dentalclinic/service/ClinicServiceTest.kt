@@ -155,7 +155,7 @@ internal class ClinicServiceTest {
 
       assertThatThrownBy { clinicService.updateClinic(existingClinicId, ClinicDto(updatedClinic)) }
         .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Clinic found with id : ${updatedClinic.id}")
+        .hasMessage("No Clinic found with id : $existingClinicId")
 
     }
 

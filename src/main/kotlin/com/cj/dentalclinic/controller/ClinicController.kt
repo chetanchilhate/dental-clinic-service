@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.*
 class ClinicController(@Autowired private val clinicService: ClinicService) {
 
   @GetMapping
-  fun getAllClinics(): List<ClinicDto> = clinicService.getAllClinics()
+  fun getAllClinics() = clinicService.getAllClinics()
 
   @GetMapping("/{id}")
-  fun getClinicById(@PathVariable("id") clinicId: Int): ClinicDto = clinicService.getClinicById(clinicId)
+  fun getClinicById(@PathVariable("id") clinicId: Int) = clinicService.getClinicById(clinicId)
 
   @PostMapping
   @ResponseStatus( HttpStatus.CREATED )
-  fun createClinic(@RequestBody newClinic: ClinicDto): ClinicDto = clinicService.createClinic(ClinicDto(name = newClinic.name))
+  fun createClinic(@RequestBody newClinic: ClinicDto) = clinicService.createClinic(ClinicDto(name = newClinic.name))
 
   @PutMapping("/{id}")
   @ResponseStatus( HttpStatus.CREATED )
-  fun updateClinic(@PathVariable("id") clinicId: Int, @RequestBody clinic: ClinicDto): ClinicDto =
+  fun updateClinic(@PathVariable("id") clinicId: Int, @RequestBody clinic: ClinicDto) =
     clinicService.updateClinic(clinicId, clinic.copy(id = clinicId))
 
   @DeleteMapping("/{id}")
