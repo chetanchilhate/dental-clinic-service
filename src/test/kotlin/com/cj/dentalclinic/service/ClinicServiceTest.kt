@@ -154,4 +154,39 @@ internal class ClinicServiceTest {
 
   }
 
+  @Nested
+  @DisplayName("deleteClinic(clinic: ClinicDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class DeleteClinic {
+
+    @Test
+    fun `should call ClinicRepository to delete Clinic by id when Clinic exists`() {
+
+      val existingClinicId = 4
+
+      every { clinicRepository.existsById(existingClinicId) } returns true
+
+      clinicService.deleteClinic(existingClinicId)
+
+      verify(exactly = 1) { clinicRepository.deleteById(existingClinicId) }
+
+    }
+
+    @Test
+    fun `should throw ResourceNotFoundException when Clinic does not exists`() {
+
+      val newClinicId = 3
+
+      every { clinicRepository.existsById(newClinicId) } returns false
+
+      verify(exactly = 0) { clinicRepository.deleteById(newClinicId) }
+
+      assertThatThrownBy { clinicService.deleteClinic(newClinicId) }
+        .isInstanceOf(ResourceNotFoundException::class.java)
+        .hasMessage("No Clinic found with id : $newClinicId")
+
+    }
+
+  }
+
 }

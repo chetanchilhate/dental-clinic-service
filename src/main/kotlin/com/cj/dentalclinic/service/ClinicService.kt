@@ -29,8 +29,8 @@ class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
     if (clinicRepository.existsById(clinicId)) ClinicDto(clinicRepository.save(Clinic(updatedClinic)))
     else throw ResourceNotFoundException("Clinic", updatedClinic.id)
 
-  fun deleteClinic(id: Int) {
-    TODO("Not yet implemented")
-  }
+  fun deleteClinic(clinicId: Int) =
+    if (clinicRepository.existsById(clinicId)) clinicRepository.deleteById(clinicId)
+    else throw ResourceNotFoundException("Clinic", clinicId)
 
 }
