@@ -1,40 +1,40 @@
 package com.cj.dentalclinic.entity
 
-import com.cj.dentalclinic.dto.ClinicDto
 import org.hibernate.Hibernate
 import javax.persistence.*
-import javax.persistence.CascadeType.ALL
+import javax.persistence.FetchType.LAZY
 import javax.persistence.GenerationType.IDENTITY
 
 @Entity
-@Table(name = "t_clinic")
-data class Clinic(
+@Table(name = "t_treatment")
+data class Treatment(
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  val id: Int? = null,
+  val id: Int?,
 
   @Column(nullable = false)
   val name: String,
 
-  @OneToMany(mappedBy = "clinic", cascade = [ALL], orphanRemoval = true)
-  val treatments: Set<Treatment> = mutableSetOf()) {
+  val charges: Double = 0.00,
 
-  constructor(clinicDto: ClinicDto) : this(clinicDto.id, clinicDto.name)
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "clinic_id", nullable = false)
+  var clinic: Clinic?) {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-    other as Clinic
+    other as Treatment
 
-    return if (id != null) id == other.id else name == other.name
+    return if(id != null) id == other.id else name == other.name
   }
 
   override fun hashCode(): Int = javaClass.hashCode()
 
   @Override
   override fun toString(): String {
-    return this::class.simpleName + "(id = $id , name = $name )"
+    return this::class.simpleName + "(id = $id , name = $name , charges = $charges , clinic = $clinic )"
   }
 
 }
