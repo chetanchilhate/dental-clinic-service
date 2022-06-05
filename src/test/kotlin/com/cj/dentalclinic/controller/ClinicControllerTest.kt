@@ -44,13 +44,25 @@ internal class ClinicControllerTest {
   }
 
   @Test
-  fun `should call ClinicService to update Clinic with given ClinicDto`() {
+  fun `should call ClinicService to update Clinic with given id and ClinicDto`() {
 
-    val clinicDto = ClinicDto(2, "Sujata Dental Clinic")
+    val id = 2
+    val clinicDto = ClinicDto(id, "Sujata Dental Clinic")
 
-    clinicController.updateClinic(clinicDto.id!!, clinicDto)
+    clinicController.updateClinic(id, clinicDto)
 
-    verify(exactly = 1) { clinicService.updateClinic(clinicDto.id!!, clinicDto) }
+    verify(exactly = 1) { clinicService.updateClinic(id, clinicDto) }
+
+  }
+
+  @Test
+  fun `should call ClinicService to delete Clinic with given id`() {
+
+    val id = 2
+
+    clinicController.deleteClinic(id)
+
+    verify(exactly = 1) { clinicService.deleteClinic(id) }
 
   }
 
