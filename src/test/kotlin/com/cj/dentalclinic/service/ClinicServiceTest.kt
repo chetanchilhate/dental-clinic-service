@@ -20,12 +20,19 @@ internal class ClinicServiceTest {
 
   private val clinicService = ClinicService(clinicRepository)
 
-  @Test
-  fun `should call ClinicRepository to findAll clinics`() {
+  @Nested
+  @DisplayName("getClinics()")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class GetClinics {
 
-    clinicService.getAllClinics()
+    @Test
+    fun `should call ClinicRepository to findAll clinics`() {
 
-    verify(exactly = 1) { clinicRepository.findAll() }
+      clinicService.getAllClinics()
+
+      verify(exactly = 1) { clinicRepository.findAll() }
+
+    }
 
   }
 
