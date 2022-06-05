@@ -16,7 +16,7 @@ data class Treatment(
   @Column(nullable = false)
   val name: String,
 
-  val charges: Double = 0.00,
+  val fee: Double = 0.00,
 
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "clinic_id", nullable = false)
@@ -34,7 +34,7 @@ data class Treatment(
 
   @Override
   override fun toString(): String {
-    return this::class.simpleName + "(id = $id , name = $name , charges = $charges , clinic = $clinic )"
+    return this::class.simpleName + "(id = $id , name = $name , fee = $fee , clinic = $clinic )"
   }
 
 }
