@@ -1,5 +1,7 @@
 package com.cj.dentalclinic.entity
 
+import com.cj.dentalclinic.dto.ClinicDto
+import com.cj.dentalclinic.dto.TreatmentDto
 import org.hibernate.Hibernate
 import javax.persistence.*
 import javax.persistence.FetchType.LAZY
@@ -11,7 +13,7 @@ data class Treatment(
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  val id: Int?,
+  val id: Int? = null,
 
   @Column(nullable = false)
   val name: String,
@@ -20,9 +22,11 @@ data class Treatment(
 
   @ManyToOne(fetch = LAZY, optional = false)
   @JoinColumn(name = "clinic_id", nullable = false)
-  val clinic: Clinic?
+  val clinic: Clinic
 
 ) {
+  constructor(treatmentDto: TreatmentDto, clinicDto: ClinicDto) :
+      this(treatmentDto.id, treatmentDto.name, treatmentDto.fee, Clinic(clinicDto))
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
