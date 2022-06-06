@@ -10,7 +10,7 @@ class TreatmentController(private val treatmentService: TreatmentService) {
 
   fun getTreatmentById(treatmentId: Int) = treatmentService.getTreatmentById(treatmentId)
 
-  fun addTreatment(treatmentDto: TreatmentDto) = treatmentService.addTreatment(treatmentDto)
+  fun addTreatment(clinicId: Int, treatmentDto: TreatmentDto) = treatmentService.addTreatment(clinicId, treatmentDto)
 
   fun updateTreatment(treatmentId: Int, treatmentDto: TreatmentDto) = treatmentService.updateTreatment(treatmentId, treatmentDto)
 

@@ -36,13 +36,15 @@ internal class TreatmentControllerTest {
   }
 
   @Test
-  fun `should call TreatmentService to add treatment for given treatment`() {
+  fun `should call TreatmentService to add treatment for given clinicId and treatment`() {
+
+    val clinicId = 2
 
     val treatmentDto = TreatmentDto(name = "Filling", fee = 500.00)
 
-    treatmentController.addTreatment(treatmentDto)
+    treatmentController.addTreatment(clinicId, treatmentDto)
 
-    verify(exactly = 1) { treatmentService.addTreatment(treatmentDto) }
+    verify(exactly = 1) { treatmentService.addTreatment(clinicId, treatmentDto) }
 
   }
 
