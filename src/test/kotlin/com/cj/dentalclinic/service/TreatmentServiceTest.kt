@@ -167,7 +167,7 @@ internal class TreatmentServiceTest {
 
     @BeforeEach
     internal fun setup() {
-      every { treatmentRepository.findTreatmentById(treatmentId) } returns
+      every { treatmentRepository.findTreatmentAndClinicById(treatmentId) } returns
           dataStore.findTreatmentsById(treatmentId)
 
       every { treatmentRepository.save(updatedTreatment) } returns updatedTreatment
@@ -183,7 +183,7 @@ internal class TreatmentServiceTest {
 
       treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
 
-      verify(exactly = 1) { treatmentRepository.findTreatmentById(treatmentId) }
+      verify(exactly = 1) { treatmentRepository.findTreatmentAndClinicById(treatmentId) }
 
     }
 
@@ -201,7 +201,7 @@ internal class TreatmentServiceTest {
 
       val unknownTreatmentId = treatmentId + 10
 
-      every { treatmentRepository.findTreatmentById(unknownTreatmentId) } returns
+      every { treatmentRepository.findTreatmentAndClinicById(unknownTreatmentId) } returns
           dataStore.findTreatmentsById(unknownTreatmentId)
 
       verify(exactly = 0) { treatmentRepository.save(updatedTreatment) }

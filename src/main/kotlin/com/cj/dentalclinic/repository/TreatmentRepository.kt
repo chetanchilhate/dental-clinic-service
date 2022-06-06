@@ -13,6 +13,6 @@ interface TreatmentRepository : JpaRepository<Treatment, Int> {
   fun findAllByClinicId(clinicId: Int): List<Treatment>
 
   @Query("SELECT t FROM Treatment t JOIN FETCH t.clinic WHERE t.id = ?1")
-  fun findTreatmentById(treatmentId: Int): Optional<Treatment>
+  fun findTreatmentAndClinicById(treatmentId: Int): Optional<Treatment>
 
 }

@@ -28,7 +28,7 @@ class TreatmentService(
 
   fun updateTreatment(treatmentId: Int, treatmentDto: TreatmentDto): TreatmentDto {
 
-    val existingTreatment = treatmentRepository.findTreatmentById(treatmentId)
+    val existingTreatment = treatmentRepository.findTreatmentAndClinicById(treatmentId)
 
     if (existingTreatment.isEmpty) {
       throw ResourceNotFoundException("Treatment", treatmentId)
