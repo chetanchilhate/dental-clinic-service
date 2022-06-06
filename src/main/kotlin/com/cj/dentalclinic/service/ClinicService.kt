@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class ClinicService(@Autowired val clinicRepository: ClinicRepository) {
+class ClinicService(@Autowired private val clinicRepository: ClinicRepository) {
 
   fun getAllClinics(): List<ClinicDto> = clinicRepository
     .findAll()

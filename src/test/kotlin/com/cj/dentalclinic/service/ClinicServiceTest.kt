@@ -55,8 +55,13 @@ internal class ClinicServiceTest {
 
     }
 
+    @AfterEach
+    internal fun tearDown() {
+      clearMocks(clinicRepository)
+    }
+
     @Test
-    fun `should return Clinic with given id with a name`() {
+    fun `should return ClinicDto with given id with a name`() {
 
       val clinicDto = clinicService.getClinicById(clinicIdWithClinic)
 
@@ -67,20 +72,20 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when no Clinic found with given id`() {
-
-      assertThatThrownBy { clinicService.getClinicById(clinicIdWithOutClinic) }
-        .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Clinic found with id : $clinicIdWithOutClinic")
-    }
-
-    @Test
     fun `should call ClinicRepository to find clinic by id`() {
 
       clinicService.getClinicById(clinicIdWithClinic)
 
       verify(exactly = 1) { clinicRepository.findById(clinicIdWithClinic) }
 
+    }
+
+    @Test
+    fun `should throw ResourceNotFoundException when no Clinic found with given id`() {
+
+      assertThatThrownBy { clinicService.getClinicById(clinicIdWithOutClinic) }
+        .isInstanceOf(ResourceNotFoundException::class.java)
+        .hasMessage("No Clinic found with id : $clinicIdWithOutClinic")
     }
 
   }
@@ -162,7 +167,7 @@ internal class ClinicServiceTest {
   }
 
   @Nested
-  @DisplayName("deleteClinic(clinic: ClinicDto)")
+  @DisplayName("deleteClinic(clinicId: Int)")
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class DeleteClinic {
 
