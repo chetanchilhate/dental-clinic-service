@@ -4,9 +4,16 @@ import com.cj.dentalclinic.dto.TreatmentDto
 import com.cj.dentalclinic.entity.Treatment
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.TreatmentRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Service
+@Transactional
 class TreatmentService(
+  @Autowired
   private val treatmentRepository: TreatmentRepository,
+  @Autowired
   private val clinicService: ClinicService
 ) {
 
