@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+  `java-test-fixtures`
   id("org.springframework.boot") version "2.7.0"
   id("io.spring.dependency-management") version "1.0.11.RELEASE"
   kotlin("jvm") version "1.6.21"
@@ -36,7 +37,6 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.mockk:mockk:1.12.4")
-  testImplementation("com.ninja-squad:springmockk:3.1.1")
 }
 
 tasks.withType<KotlinCompile> {
@@ -57,6 +57,7 @@ configurations[integrationTest.runtimeOnlyConfigurationName].extendsFrom(configu
 
 dependencies {
   "integrationTestImplementation"(project)
+  "integrationTestImplementation"("com.ninja-squad:springmockk:3.1.1")
 }
 
 val integrationTestTask = tasks.register<Test>("integrationTest") {

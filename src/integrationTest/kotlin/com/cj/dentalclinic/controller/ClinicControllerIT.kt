@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.controller
 
+import com.cj.dentalclinic.ClinicDataStore
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.service.ClinicService
@@ -18,9 +19,9 @@ const val CLINIC_BASE_URI = "/api/v1/clinics"
 
 @WebMvcTest(ClinicController::class)
 @Import(ClinicService::class)
-internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
+internal class ClinicControllerIT(@Autowired val mockMvc: MockMvc) {
 
-  private val clinics = listOf(Clinic(1, "Sharda Dental Clinic"), Clinic(2, "Smart Dental Clinic"))
+  private val dataStore = ClinicDataStore()
 
   @MockkBean
   private lateinit var clinicRepository: ClinicRepository
@@ -32,7 +33,7 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
     @BeforeEach
     fun setup() {
-      every { clinicRepository.findAll() } returns clinics
+      every { clinicRepository.findAll() } returns dataStore.findAllClinics()
     }
 
     @Test
@@ -47,7 +48,10 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
     fun `should return json array of all the clinics`() {
       mockMvc.get(CLINIC_BASE_URI)
         .andExpect {
-          content { json("""[{"id":1,"name":"Sharda Dental Clinic"},{"id":2,"name":"Smart Dental Clinic"}]""") }
+          content { json("""[
+            |{"id":1,"name":"Sharda Dental Clinic"},
+            |{"id":2,"name":"Smart Dental Clinic"},
+            |{"id":3,"name":"Sonal Dental Clinic"}]""".trimMargin()) }
         }
     }
 
@@ -63,7 +67,7 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
       val id = 2
 
-      every { clinicRepository.findById(id) } returns findClinicById(id)
+      every { clinicRepository.findById(id) } returns dataStore.findClinicById(id)
 
       mockMvc.get("$CLINIC_BASE_URI/$id")
         .andExpect {
@@ -77,7 +81,7 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
       val id = 4
 
-      every { clinicRepository.findById(id) } returns findClinicById(id)
+      every { clinicRepository.findById(id) } returns dataStore.findClinicById(id)
 
       mockMvc.get("$CLINIC_BASE_URI/$id")
         .andExpect {
@@ -85,8 +89,6 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
           content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
         }
     }
-
-    private fun findClinicById(id: Int) = clinics.stream().filter { t -> t.id == id }.findFirst()
 
   }
 
@@ -98,11 +100,11 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
     @Test
     fun `should return 201 status and json of clinic with generated id and given name`() {
 
-      val newClinicId = 4
+      val newClinicId = dataStore.newClinicId()
 
-      val newClinic = Clinic(name = "Sujata Dental Clinic")
+      val newClinic = dataStore.newClinic()
 
-      every { clinicRepository.save(newClinic) } returns newClinic.copy(newClinicId)
+      every { clinicRepository.save(newClinic) } returns dataStore.saveClinic(newClinic)
 
       mockMvc.post(CLINIC_BASE_URI) {
 
@@ -125,6 +127,10 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class UpdateClinic {
 
+    private val id = 4
+
+    private val updatedClinic = Clinic(id, "Sujata Dental Clinic")
+
     @BeforeEach
     internal fun setUp() {
       clearMocks(clinicRepository)
@@ -132,9 +138,6 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     fun `should return 201 status and json of updated clinic when clinic exists`() {
-
-      val id = 4
-      val updatedClinic = Clinic(id, "Sujata Dental Clinic")
 
       every { clinicRepository.existsById(id) } returns true
 
@@ -156,9 +159,6 @@ internal class ClinicControllerITest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
-
-      val id = 4
-      val updatedClinic = Clinic(id, "Sujata Dental Clinic")
 
       every { clinicRepository.existsById(id) } returns false
 
