@@ -12,7 +12,6 @@ internal class TreatmentControllerTest {
 
   private val treatmentController = TreatmentController(treatmentService)
 
-
   @Test
   internal fun `should call TreatmentService to get all the treatments for given clinic id`() {
 
