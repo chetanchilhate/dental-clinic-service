@@ -19,7 +19,7 @@ const val CLINIC_BASE_URI = "/api/v1/clinics"
 
 @WebMvcTest(ClinicController::class)
 @Import(ClinicService::class)
-internal class ClinicControllerIT(@Autowired val mockMvc: MockMvc) {
+internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
   private val dataStore = ClinicDataStore()
 
