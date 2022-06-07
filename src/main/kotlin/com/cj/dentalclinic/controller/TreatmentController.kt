@@ -3,10 +3,15 @@ package com.cj.dentalclinic.controller
 import com.cj.dentalclinic.dto.EmptyResponse
 import com.cj.dentalclinic.dto.TreatmentDto
 import com.cj.dentalclinic.service.TreatmentService
+import org.springframework.http.HttpStatus.CREATED
+import org.springframework.web.bind.annotation.*
 
+@RestController
+@RequestMapping("/api/v1")
 class TreatmentController(private val treatmentService: TreatmentService) {
 
-  fun getAllTreatments(clinicId: Int) = treatmentService.getAllTreatments(clinicId)
+  @GetMapping("/clinics/{clinicId}/treatments")
+  fun getAllTreatments(@PathVariable("clinicId") clinicId: Int) = treatmentService.getAllTreatments(clinicId)
 
   fun getTreatmentById(treatmentId: Int) = treatmentService.getTreatmentById(treatmentId)
 
