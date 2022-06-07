@@ -21,11 +21,15 @@ class TreatmentController(private val treatmentService: TreatmentService) {
   fun addTreatment(@PathVariable("clinicId") clinicId: Int, @RequestBody treatmentDto: TreatmentDto) =
     treatmentService.addTreatment(clinicId, treatmentDto)
 
-  fun updateTreatment(treatmentId: Int, treatmentDto: TreatmentDto) = treatmentService.updateTreatment(treatmentId, treatmentDto)
+  @PutMapping("/treatments/{id}")
+  @ResponseStatus(CREATED)
+  fun updateTreatment(@PathVariable("id") treatmentId: Int, @RequestBody treatmentDto: TreatmentDto) =
+    treatmentService.updateTreatment(treatmentId, treatmentDto)
 
-  fun deleteTreatment(treatmentId: Int): EmptyResponse {
+  @DeleteMapping("/treatments/{id}")
+  fun deleteTreatment(@PathVariable("id") treatmentId: Int): EmptyResponse {
     treatmentService.deleteTreatment(treatmentId)
-    return  EmptyResponse()
+    return EmptyResponse()
   }
 
 }

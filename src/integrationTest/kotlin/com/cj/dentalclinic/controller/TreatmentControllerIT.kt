@@ -6,6 +6,7 @@ import com.cj.dentalclinic.repository.TreatmentRepository
 import com.cj.dentalclinic.service.ClinicService
 import com.cj.dentalclinic.service.TreatmentService
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.clearMocks
 import io.mockk.every
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 
 const val TREATMENT_BASE_URI = "/api/v1/treatments"
 
@@ -149,6 +151,62 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
       }.andExpect {
         status { isNotFound() }
         content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+      }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("updateTreatment(id: Int, treatment: TreatmentDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  internal inner class UpdateTreatment {
+
+    private val id = 3
+
+    private val updatedTreatment = dataStore.findTreatmentsById(id).get()
+
+    @BeforeEach
+    internal fun setUp() {
+      clearMocks(clinicRepository)
+    }
+
+    @Test
+    internal fun `should return 201 status and json of updated treatment when treatment exists`() {
+
+      every { treatmentRepository.findTreatmentAndClinicById(id) } returns dataStore.findTreatmentsById(id)
+
+      every { treatmentRepository.save(updatedTreatment) } returns updatedTreatment
+
+      mockMvc.put("$TREATMENT_BASE_URI/{id}", id) {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":"${updatedTreatment.name}","fee": ${updatedTreatment.fee}}}"""
+
+      }.andExpect {
+
+        status { isCreated() }
+
+        content { json( """{"id":$id,"name":"${updatedTreatment.name}","fee": ${updatedTreatment.fee}}}""") }
+      }
+    }
+
+    @Test
+    internal fun `should return 404 status and json of ErrorResponse when treatment does not exists`() {
+
+      every { treatmentRepository.findTreatmentAndClinicById(id) } returns dataStore.findTreatmentsById(id + 2)
+
+      mockMvc.put("$TREATMENT_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":"${updatedTreatment.name}","fee": ${updatedTreatment.fee}}}"""
+
+      }.andExpect {
+
+        status { isNotFound() }
+
+        content { json("""{"code": NOT_FOUND,"message":"No Treatment found with id : $id"}""") }
       }
     }
 
