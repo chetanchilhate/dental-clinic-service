@@ -1,6 +1,7 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.ClinicDataStore
+import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.TreatmentRepository
 import com.cj.dentalclinic.service.ClinicService
 import com.cj.dentalclinic.service.TreatmentService
@@ -10,8 +11,10 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 
 const val TREATMENT_BASE_URI = "/api/v1/treatments"
 
@@ -20,6 +23,9 @@ const val TREATMENT_BASE_URI = "/api/v1/treatments"
 internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
   private val dataStore = ClinicDataStore()
+
+  @MockkBean
+  private lateinit var clinicRepository: ClinicRepository
 
   @MockkBean
   private lateinit var treatmentRepository: TreatmentRepository
@@ -88,6 +94,62 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
           status { isNotFound() }
           content { json("""{"code": NOT_FOUND,"message":"No Treatment found with id : $id"}""") }
         }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("addTreatmentToClinic(clinicId: Int, treatmentDto: TreatmentDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class AddTreatmentToClinic {
+
+    private val newTreatment = dataStore.newTreatment()
+
+    @Test
+    internal fun `should return 201 status and json of clinic with generated id and given name`() {
+
+
+      val newTreatmentId = dataStore.newTreatmentId()
+
+      val existingClinic = newTreatment.clinic
+
+      val existingClinicId = existingClinic.id!!
+
+      every { clinicRepository.findById(existingClinicId) } returns dataStore.findClinicById(existingClinicId)
+
+      every { treatmentRepository.save(newTreatment) } returns dataStore.saveTreatment(newTreatment)
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", existingClinicId) {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"name":"${newTreatment.name}","fee": ${newTreatment.fee}}"""
+
+      }.andExpect {
+
+        status { isCreated() }
+
+        content { json("""{"id":$newTreatmentId,"name":"${newTreatment.name}","fee": ${newTreatment.fee}}""") }
+      }
+    }
+
+    @Test
+    internal fun `given clinic id should return 404 status and a json of ErrorResponse`() {
+
+      val id = 4
+
+      every { clinicRepository.findById(id) } returns dataStore.findClinicById(id)
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", id) {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"name":"${newTreatment.name}","fee": ${newTreatment.fee}}"""
+
+      }.andExpect {
+        status { isNotFound() }
+        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+      }
     }
 
   }

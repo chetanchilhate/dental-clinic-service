@@ -16,7 +16,10 @@ class TreatmentController(private val treatmentService: TreatmentService) {
   @GetMapping("/treatments/{id}")
   fun getTreatmentById(@PathVariable("id") treatmentId: Int) = treatmentService.getTreatmentById(treatmentId)
 
-  fun addTreatment(clinicId: Int, treatmentDto: TreatmentDto) = treatmentService.addTreatment(clinicId, treatmentDto)
+  @PostMapping("/clinics/{clinicId}/treatments")
+  @ResponseStatus(CREATED)
+  fun addTreatment(@PathVariable("clinicId") clinicId: Int, @RequestBody treatmentDto: TreatmentDto) =
+    treatmentService.addTreatment(clinicId, treatmentDto)
 
   fun updateTreatment(treatmentId: Int, treatmentDto: TreatmentDto) = treatmentService.updateTreatment(treatmentId, treatmentDto)
 
