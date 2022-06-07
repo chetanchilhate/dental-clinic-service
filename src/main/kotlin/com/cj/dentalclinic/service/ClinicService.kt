@@ -13,7 +13,6 @@ class ClinicService(private val clinicRepository: ClinicRepository) {
 
   fun getAllClinics(): List<ClinicDto> = clinicRepository
     .findAll()
-    .stream()
     .map { t -> ClinicDto(t) }
     .toList()
 

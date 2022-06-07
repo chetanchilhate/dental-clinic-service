@@ -16,7 +16,6 @@ class TreatmentService(
 
   fun getAllTreatments(clinicId: Int): List<TreatmentDto> = treatmentRepository
     .findAllByClinicId(clinicId)
-    .stream()
     .map { t -> TreatmentDto(t) }
     .toList()
 
