@@ -14,7 +14,7 @@ internal class TreatmentControllerTest {
 
 
   @Test
-  fun `should call TreatmentService to get all the treatments for given clinic id`() {
+  internal fun `should call TreatmentService to get all the treatments for given clinic id`() {
 
     val clinicId = 1
 
@@ -25,7 +25,7 @@ internal class TreatmentControllerTest {
   }
 
   @Test
-  fun `should call TreatmentService to get treatment for given treatment id`() {
+  internal fun `should call TreatmentService to get treatment for given treatment id`() {
 
     val treatmentId = 1
 
@@ -36,7 +36,7 @@ internal class TreatmentControllerTest {
   }
 
   @Test
-  fun `should call TreatmentService to add treatment for given clinicId and treatment`() {
+  internal fun `should call TreatmentService to add treatment for given clinicId and treatment`() {
 
     val clinicId = 2
 
@@ -49,7 +49,7 @@ internal class TreatmentControllerTest {
   }
 
   @Test
-  fun `should call TreatmentService to update treatment for given id and treatment`() {
+  internal fun `should call TreatmentService to update treatment for given id and treatment`() {
 
     val treatmentId = 1
 
@@ -62,7 +62,7 @@ internal class TreatmentControllerTest {
   }
 
   @Test
-  fun `should call TreatmentService to delete treatment for given treatment id`() {
+  internal fun `should call TreatmentService to delete treatment for given treatment id`() {
 
     val treatmentId = 1
 

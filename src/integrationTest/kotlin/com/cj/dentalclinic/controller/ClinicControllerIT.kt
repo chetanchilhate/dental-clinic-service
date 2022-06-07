@@ -32,12 +32,12 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
   inner class GetAllClinics {
 
     @BeforeEach
-    fun setup() {
+    internal fun setup() {
       every { clinicRepository.findAll() } returns dataStore.findAllClinics()
     }
 
     @Test
-    fun `should return 200 status code`() {
+    internal fun `should return 200 status code`() {
       mockMvc.get(CLINIC_BASE_URI)
         .andExpect {
           status { isOk() }
@@ -45,7 +45,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `should return json array of all the clinics`() {
+    internal fun `should return json array of all the clinics`() {
       mockMvc.get(CLINIC_BASE_URI)
         .andExpect {
           content { json("""[
@@ -63,7 +63,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
   inner class GetClinicById {
 
     @Test
-    fun `given id should return 200 status and a json of Clinic`() {
+    internal fun `given id should return 200 status and a json of Clinic`() {
 
       val id = 2
 
@@ -77,7 +77,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `given id should return 404 status and a json of ErrorResponse`() {
+    internal fun `given id should return 404 status and a json of ErrorResponse`() {
 
       val id = 4
 
@@ -98,7 +98,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
   inner class CreateClinic {
 
     @Test
-    fun `should return 201 status and json of clinic with generated id and given name`() {
+    internal fun `should return 201 status and json of clinic with generated id and given name`() {
 
       val newClinicId = dataStore.newClinicId()
 
@@ -137,7 +137,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `should return 201 status and json of updated clinic when clinic exists`() {
+    internal fun `should return 201 status and json of updated clinic when clinic exists`() {
 
       every { clinicRepository.existsById(id) } returns true
 
@@ -158,7 +158,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
+    internal fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
 
       every { clinicRepository.existsById(id) } returns false
 
@@ -191,7 +191,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `should return 200 status and empty json when clinic exists`() {
+    internal fun `should return 200 status and empty json when clinic exists`() {
 
       every { clinicRepository.existsById(id) } returns true
 
@@ -207,7 +207,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
+    internal fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
 
       every { clinicRepository.existsById(id) } returns false
 

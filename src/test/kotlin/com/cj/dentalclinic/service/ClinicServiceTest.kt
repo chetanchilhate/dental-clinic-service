@@ -26,7 +26,7 @@ internal class ClinicServiceTest {
   inner class GetClinics {
 
     @Test
-    fun `should call ClinicRepository to findAll clinics`() {
+    internal fun `should call ClinicRepository to findAll clinics`() {
 
       clinicService.getAllClinics()
 
@@ -46,7 +46,7 @@ internal class ClinicServiceTest {
     private val clinicIdWithOutClinic = 4
 
     @BeforeEach
-    fun setup() {
+    internal fun setup() {
 
       every { clinicRepository.findById(clinicIdWithClinic) } returns
           of(Clinic(clinicIdWithClinic, "Smart Dental Clinic"))
@@ -61,7 +61,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should return ClinicDto with given id with a name`() {
+    internal fun `should return ClinicDto with given id with a name`() {
 
       val clinicDto = clinicService.getClinicById(clinicIdWithClinic)
 
@@ -72,7 +72,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should call ClinicRepository to find clinic by id`() {
+    internal fun `should call ClinicRepository to find clinic by id`() {
 
       clinicService.getClinicById(clinicIdWithClinic)
 
@@ -81,7 +81,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when no Clinic found with given id`() {
+    internal fun `should throw ResourceNotFoundException when no Clinic found with given id`() {
 
       assertThatThrownBy { clinicService.getClinicById(clinicIdWithOutClinic) }
         .isInstanceOf(ResourceNotFoundException::class.java)
@@ -105,7 +105,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should call ClinicRepository to save new Clinic`() {
+    internal fun `should call ClinicRepository to save new Clinic`() {
 
       clinicService.createClinic(ClinicDto(newClinic))
 
@@ -114,7 +114,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should return saved Clinic with generated id and given name`() {
+    internal fun `should return saved Clinic with generated id and given name`() {
 
       val clinicDto = clinicService.createClinic(ClinicDto(newClinic))
 
@@ -141,7 +141,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should call ClinicRepository to update Clinic when Clinic exists`() {
+    internal fun `should call ClinicRepository to update Clinic when Clinic exists`() {
 
       every { clinicRepository.existsById(existingClinicId) } returns true
 
@@ -154,7 +154,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when Clinic does not exists`() {
+    internal fun `should throw ResourceNotFoundException when Clinic does not exists`() {
 
       verify(exactly = 0) { clinicRepository.save(updatedClinic) }
 
@@ -172,7 +172,7 @@ internal class ClinicServiceTest {
   inner class DeleteClinic {
 
     @Test
-    fun `should call ClinicRepository to delete Clinic by id when Clinic exists`() {
+    internal fun `should call ClinicRepository to delete Clinic by id when Clinic exists`() {
 
       val existingClinicId = 4
 
@@ -185,7 +185,7 @@ internal class ClinicServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when Clinic does not exists`() {
+    internal fun `should throw ResourceNotFoundException when Clinic does not exists`() {
 
       val newClinicId = 3
 

@@ -30,7 +30,7 @@ internal class TreatmentServiceTest {
   inner class GetTreatments {
 
     @Test
-    fun `should call TreatmentsRepository to findAll treatments by clinic id`() {
+    internal fun `should call TreatmentsRepository to findAll treatments by clinic id`() {
 
       val clinicId = 1
 
@@ -52,7 +52,7 @@ internal class TreatmentServiceTest {
     private val treatmentIdNotExist = 4
 
     @BeforeEach
-    fun setup() {
+    internal fun setup() {
 
       every { treatmentRepository.findById(treatmentIdExist) } returns dataStore.findTreatmentsById(treatmentIdExist)
 
@@ -68,7 +68,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should return TreatmentDto with given id, not blank name and fee greater or equal to 100`() {
+    internal fun `should return TreatmentDto with given id, not blank name and fee greater or equal to 100`() {
 
       val treatmentDto = treatmentService.getTreatmentById(treatmentIdExist)
 
@@ -81,7 +81,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should call TreatmentRepository to find Treatment by id`() {
+    internal fun `should call TreatmentRepository to find Treatment by id`() {
 
       treatmentService.getTreatmentById(treatmentIdExist)
 
@@ -90,7 +90,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when no Treatment found with given id`() {
+    internal fun `should throw ResourceNotFoundException when no Treatment found with given id`() {
 
       assertThatThrownBy { treatmentService.getTreatmentById(treatmentIdNotExist) }
         .isInstanceOf(ResourceNotFoundException::class.java)
@@ -124,7 +124,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should call ClinicService to get Clinic by id`() {
+    internal fun `should call ClinicService to get Clinic by id`() {
 
       treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment))
 
@@ -133,7 +133,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should call TreatmentRepository to save new Treatment`() {
+    internal fun `should call TreatmentRepository to save new Treatment`() {
 
       treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment))
 
@@ -142,7 +142,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should return saved Treatment with generated id, given name and fee`() {
+    internal fun `should return saved Treatment with generated id, given name and fee`() {
 
       val treatmentDto = treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment))
 
@@ -179,7 +179,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should call TreatmentRepository findTreatmentsById for given treatment id`() {
+    internal fun `should call TreatmentRepository findTreatmentsById for given treatment id`() {
 
       treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
 
@@ -188,7 +188,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should call TreatmentRepository to save treatment if treatment exist for given treatment id`() {
+    internal fun `should call TreatmentRepository to save treatment if treatment exist for given treatment id`() {
 
       treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
 
@@ -197,7 +197,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when Treatment does not exists`() {
+    internal fun `should throw ResourceNotFoundException when Treatment does not exists`() {
 
       val unknownTreatmentId = treatmentId + 10
 
@@ -220,7 +220,7 @@ internal class TreatmentServiceTest {
   inner class DeleteClinic {
 
     @Test
-    fun `should call TreatmentRepository to delete Treatment by id when Treatment exists`() {
+    internal fun `should call TreatmentRepository to delete Treatment by id when Treatment exists`() {
 
       val existingTreatmentId = 3
 
@@ -233,7 +233,7 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    fun `should throw ResourceNotFoundException when Treatment does not exists`() {
+    internal fun `should throw ResourceNotFoundException when Treatment does not exists`() {
 
       val unknownTreatmentId = 10
 

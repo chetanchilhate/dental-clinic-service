@@ -13,7 +13,7 @@ internal class ClinicControllerTest {
   private val clinicController = ClinicController(clinicService)
 
   @Test
-  fun `should call ClinicService to get all clinics`() {
+  internal fun `should call ClinicService to get all clinics`() {
 
     clinicController.getAllClinics()
 
@@ -22,7 +22,7 @@ internal class ClinicControllerTest {
   }
 
   @Test
-  fun `should call ClinicService to get Clinic with given id`() {
+  internal fun `should call ClinicService to get Clinic with given id`() {
 
     val clinicId = 2
 
@@ -33,7 +33,7 @@ internal class ClinicControllerTest {
   }
 
   @Test
-  fun `should call ClinicService to create Clinic with given ClinicDto`() {
+  internal fun `should call ClinicService to create Clinic with given ClinicDto`() {
 
     val clinicDto = ClinicDto(name = "Sujata Dental Clinic")
 
@@ -44,7 +44,7 @@ internal class ClinicControllerTest {
   }
 
   @Test
-  fun `should call ClinicService to update Clinic with given id and ClinicDto`() {
+  internal fun `should call ClinicService to update Clinic with given id and ClinicDto`() {
 
     val id = 2
     val clinicDto = ClinicDto(id, "Sujata Dental Clinic")
@@ -56,7 +56,7 @@ internal class ClinicControllerTest {
   }
 
   @Test
-  fun `should call ClinicService to delete Clinic with given id`() {
+  internal fun `should call ClinicService to delete Clinic with given id`() {
 
     val id = 2
 
