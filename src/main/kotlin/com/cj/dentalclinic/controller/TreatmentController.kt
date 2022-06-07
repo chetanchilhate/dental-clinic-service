@@ -13,7 +13,8 @@ class TreatmentController(private val treatmentService: TreatmentService) {
   @GetMapping("/clinics/{clinicId}/treatments")
   fun getAllTreatments(@PathVariable("clinicId") clinicId: Int) = treatmentService.getAllTreatments(clinicId)
 
-  fun getTreatmentById(treatmentId: Int) = treatmentService.getTreatmentById(treatmentId)
+  @GetMapping("/treatments/{id}")
+  fun getTreatmentById(@PathVariable("id") treatmentId: Int) = treatmentService.getTreatmentById(treatmentId)
 
   fun addTreatment(clinicId: Int, treatmentDto: TreatmentDto) = treatmentService.addTreatment(clinicId, treatmentDto)
 
