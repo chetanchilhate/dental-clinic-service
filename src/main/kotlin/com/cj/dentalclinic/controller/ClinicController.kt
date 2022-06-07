@@ -17,11 +17,11 @@ class ClinicController(private val clinicService: ClinicService) {
   fun getClinicById(@PathVariable("id") clinicId: Int) = clinicService.getClinicById(clinicId)
 
   @PostMapping
-  @ResponseStatus( CREATED )
+  @ResponseStatus(CREATED)
   fun createClinic(@RequestBody newClinic: ClinicDto) = clinicService.createClinic(ClinicDto(name = newClinic.name))
 
   @PutMapping("/{id}")
-  @ResponseStatus( CREATED )
+  @ResponseStatus(CREATED)
   fun updateClinic(@PathVariable("id") clinicId: Int, @RequestBody clinic: ClinicDto) =
     clinicService.updateClinic(clinicId, clinic.copy(id = clinicId))
 
