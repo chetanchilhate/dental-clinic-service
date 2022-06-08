@@ -26,6 +26,8 @@ class ClinicDataStore {
 
   fun newClinic() = Clinic(name = "Sky Dental Clinic")
 
+  fun existingClinic() = clinics[0]
+
   fun saveClinic(clinic: Clinic) = Clinic(newClinicId(), clinic.name)
 
   fun findAllTreatmentsByClinicId(clinicId: Int): List<Treatment> = treatments.stream().filter{ t -> t.clinic.id == clinicId }.toList()
@@ -34,7 +36,7 @@ class ClinicDataStore {
 
   fun newTreatmentId() = 4
 
-  fun newTreatment() = Treatment(name = "Cleaning", fee = 500.00, clinic =  clinics[0])
+  fun newTreatment() = Treatment(name = "Cleaning", fee = 500.00, clinic =  existingClinic())
 
   fun saveTreatment(treatment: Treatment) = Treatment(newTreatmentId() , treatment.name, treatment.fee, treatment.clinic)
 

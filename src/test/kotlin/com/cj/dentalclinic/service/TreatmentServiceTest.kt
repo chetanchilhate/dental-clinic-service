@@ -1,9 +1,9 @@
 package com.cj.dentalclinic.service
 
 import com.cj.dentalclinic.ClinicDataStore
-import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.dto.TreatmentDto
 import com.cj.dentalclinic.exception.ResourceNotFoundException
+import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.TreatmentRepository
 import io.mockk.clearMocks
 import io.mockk.every
@@ -17,11 +17,11 @@ internal class TreatmentServiceTest {
 
   private val dataStore = ClinicDataStore()
 
-  private val clinicService: ClinicService = mockk(relaxed = true)
+  private val clinicRepository: ClinicRepository = mockk(relaxed = true)
 
   private val treatmentRepository: TreatmentRepository = mockk(relaxed = true)
 
-  private val treatmentService = TreatmentService(treatmentRepository, clinicService)
+  private val treatmentService = TreatmentService(treatmentRepository, clinicRepository)
 
   @Nested
   @DisplayName("getTreatmentsByClinicId(clinicId: Int)")
@@ -112,22 +112,22 @@ internal class TreatmentServiceTest {
     @BeforeEach
     internal fun setUp() {
 
-      every { clinicService.getClinicById(clinicId) } returns ClinicDto(clinic)
+      every { clinicRepository.getReferenceById(clinicId) } returns clinic
 
       every { treatmentRepository.save(newTreatment) } returns dataStore.saveTreatment(newTreatment)
     }
 
     @AfterEach
     internal fun tearDown() {
-      clearMocks(clinicService, treatmentRepository)
+      clearMocks(treatmentRepository, clinicRepository)
     }
 
     @Test
-    internal fun `should call ClinicService to get Clinic by id`() {
+    internal fun `should call ClinicRepository to get Clinic Reference by id`() {
 
       treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment))
 
-      verify(exactly = 1) { clinicService.getClinicById(clinicId) }
+      verify(exactly = 1) { clinicRepository.getReferenceById(clinicId) }
 
     }
 

@@ -3,7 +3,6 @@ package com.cj.dentalclinic.controller
 import com.cj.dentalclinic.ClinicDataStore
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.TreatmentRepository
-import com.cj.dentalclinic.service.ClinicService
 import com.cj.dentalclinic.service.TreatmentService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
@@ -13,13 +12,14 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.*
 
 const val TREATMENT_BASE_URI = "/api/v1/treatments"
 
 @WebMvcTest(TreatmentController::class)
-@Import(TreatmentService::class,ClinicService::class)
+@Import(TreatmentService::class)
 internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
   private val dataStore = ClinicDataStore()
@@ -105,21 +105,23 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
     private val newTreatment = dataStore.newTreatment()
 
+    @AfterEach
+    internal fun tearDown() {
+      clearMocks(treatmentRepository, clinicRepository)
+    }
+
     @Test
     internal fun `should return 201 status and json of clinic with generated id and given name`() {
 
-
       val newTreatmentId = dataStore.newTreatmentId()
 
-      val existingClinic = newTreatment.clinic
+      val clinicId = dataStore.existingClinic().id!!
 
-      val existingClinicId = existingClinic.id!!
-
-      every { clinicRepository.findById(existingClinicId) } returns dataStore.findClinicById(existingClinicId)
+      every { clinicRepository.getReferenceById(clinicId) } returns dataStore.existingClinic()
 
       every { treatmentRepository.save(newTreatment) } returns dataStore.saveTreatment(newTreatment)
 
-      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", existingClinicId) {
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", clinicId) {
 
         contentType = APPLICATION_JSON
 
@@ -136,11 +138,14 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
     @Test
     internal fun `given clinic id should return 404 status and a json of ErrorResponse`() {
 
-      val id = 4
+      val clinicId = 4
 
-      every { clinicRepository.findById(id) } returns dataStore.findClinicById(id)
+      every { clinicRepository.getReferenceById(clinicId) } returns dataStore.existingClinic()
 
-      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", id) {
+      every { treatmentRepository.save(newTreatment) }
+        .throws(DataIntegrityViolationException("Cannot add or update a child row: a foreign key constraint fails"))
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", clinicId) {
 
         contentType = APPLICATION_JSON
 
@@ -148,7 +153,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
       }.andExpect {
         status { isNotFound() }
-        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $clinicId"}""") }
       }
     }
 

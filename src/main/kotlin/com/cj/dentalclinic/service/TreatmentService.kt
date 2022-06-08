@@ -3,7 +3,9 @@ package com.cj.dentalclinic.service
 import com.cj.dentalclinic.dto.TreatmentDto
 import com.cj.dentalclinic.entity.Treatment
 import com.cj.dentalclinic.exception.ResourceNotFoundException
+import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.TreatmentRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class TreatmentService(
   private val treatmentRepository: TreatmentRepository,
-  private val clinicService: ClinicService
+  private val clinicRepository: ClinicRepository
 ) {
 
   fun getAllTreatments(clinicId: Int): List<TreatmentDto> = treatmentRepository
@@ -25,8 +27,13 @@ class TreatmentService(
     .orElseThrow { ResourceNotFoundException("Treatment", treatmentId) }
 
   fun addTreatment(clinicId: Int, treatmentDto: TreatmentDto): TreatmentDto {
-    val clinicDto = clinicService.getClinicById(clinicId)
-    return TreatmentDto(treatmentRepository.save(Treatment(treatmentDto.copy(id = null), clinicDto)))
+    val clinic = clinicRepository.getReferenceById(clinicId)
+    val newTreatment = Treatment(name = treatmentDto.name, fee = treatmentDto.fee, clinic = clinic)
+    return try {
+      TreatmentDto(treatmentRepository.save(newTreatment))
+    } catch (e: DataIntegrityViolationException) {
+      throw ResourceNotFoundException("Clinic", clinicId)
+    }
   }
 
   fun updateTreatment(treatmentId: Int, treatmentDto: TreatmentDto): TreatmentDto {
