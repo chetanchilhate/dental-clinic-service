@@ -166,7 +166,7 @@ internal class TreatmentServiceTest {
 
     @BeforeEach
     internal fun setup() {
-      every { treatmentRepository.findTreatmentAndClinicById(treatmentId) } returns
+      every { treatmentRepository.findById(treatmentId) } returns
           dataStore.findTreatmentsById(treatmentId)
 
       every { treatmentRepository.save(updatedTreatment) } returns updatedTreatment
@@ -178,11 +178,11 @@ internal class TreatmentServiceTest {
     }
 
     @Test
-    internal fun `should call TreatmentRepository findTreatmentsById for given treatment id`() {
+    internal fun `should call TreatmentRepository findById for given treatment id`() {
 
       treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
 
-      verify(exactly = 1) { treatmentRepository.findTreatmentAndClinicById(treatmentId) }
+      verify(exactly = 1) { treatmentRepository.findById(treatmentId) }
 
     }
 
@@ -198,9 +198,9 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should throw ResourceNotFoundException when Treatment does not exists`() {
 
-      val unknownTreatmentId = treatmentId + 10
+      val unknownTreatmentId = -treatmentId
 
-      every { treatmentRepository.findTreatmentAndClinicById(unknownTreatmentId) } returns
+      every { treatmentRepository.findById(unknownTreatmentId) } returns
           dataStore.findTreatmentsById(unknownTreatmentId)
 
       verify(exactly = 0) { treatmentRepository.save(updatedTreatment) }
