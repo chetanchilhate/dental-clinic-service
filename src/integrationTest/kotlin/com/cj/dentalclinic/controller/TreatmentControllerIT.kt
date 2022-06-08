@@ -176,6 +176,8 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
     @Test
     internal fun `should return 201 status and json of updated treatment when treatment exists`() {
 
+      every { treatmentRepository.existsById(id) } returns true
+
       every { treatmentRepository.findById(id) } returns dataStore.findTreatmentsById(id)
 
       every { treatmentRepository.save(updatedTreatment) } returns updatedTreatment
@@ -197,7 +199,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
     @Test
     internal fun `should return 404 status and json of ErrorResponse when treatment does not exists`() {
 
-      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentsById(-id)
+      every { treatmentRepository.existsById(id) } returns false
 
       mockMvc.put("$TREATMENT_BASE_URI/$id") {
 
