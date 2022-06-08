@@ -1,13 +1,13 @@
 package com.cj.dentalclinic.entity
 
-import com.cj.dentalclinic.dto.ClinicDto
-import com.cj.dentalclinic.dto.TreatmentDto
 import org.hibernate.Hibernate
+import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
 import javax.persistence.FetchType.LAZY
 import javax.persistence.GenerationType.IDENTITY
 
 @Entity
+@DynamicUpdate
 @Table(name = "t_treatment")
 class Treatment(
 
@@ -22,12 +22,9 @@ class Treatment(
 
   @ManyToOne(fetch = LAZY, optional = false)
   @JoinColumn(name = "clinic_id", nullable = false, updatable = false)
-  var clinic: Clinic
+  val clinic: Clinic
 
 ) {
-  constructor(treatmentDto: TreatmentDto, clinicDto: ClinicDto) :
-      this(name = treatmentDto.name, fee = treatmentDto.fee, clinic =  Clinic(clinicDto))
-
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

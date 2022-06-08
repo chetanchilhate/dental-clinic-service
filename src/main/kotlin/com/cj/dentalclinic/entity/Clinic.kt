@@ -2,10 +2,12 @@ package com.cj.dentalclinic.entity
 
 import com.cj.dentalclinic.dto.ClinicDto
 import org.hibernate.Hibernate
+import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
 import javax.persistence.GenerationType.IDENTITY
 
 @Entity
+@DynamicUpdate
 @Table(name = "t_clinic")
 class Clinic(
 
