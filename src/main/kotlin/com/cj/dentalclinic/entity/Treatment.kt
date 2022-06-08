@@ -9,24 +9,25 @@ import javax.persistence.GenerationType.IDENTITY
 
 @Entity
 @Table(name = "t_treatment")
-data class Treatment(
+class Treatment(
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
   val id: Int? = null,
 
   @Column(nullable = false)
-  val name: String,
+  var name: String,
 
-  val fee: Double = 0.00,
+  var fee: Double = 0.00,
 
   @ManyToOne(fetch = LAZY, optional = false)
-  @JoinColumn(name = "clinic_id", nullable = false)
-  val clinic: Clinic
+  @JoinColumn(name = "clinic_id", nullable = false, updatable = false)
+  var clinic: Clinic
 
 ) {
   constructor(treatmentDto: TreatmentDto, clinicDto: ClinicDto) :
-      this(treatmentDto.id, treatmentDto.name, treatmentDto.fee, Clinic(clinicDto))
+      this(name = treatmentDto.name, fee = treatmentDto.fee, clinic =  Clinic(clinicDto))
+
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

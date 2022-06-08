@@ -7,7 +7,7 @@ import javax.persistence.GenerationType.IDENTITY
 
 @Entity
 @Table(name = "t_clinic")
-data class Clinic(
+class Clinic(
 
   @Id
   @GeneratedValue(strategy = IDENTITY)

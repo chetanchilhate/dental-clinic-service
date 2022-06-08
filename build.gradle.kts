@@ -9,6 +9,12 @@ plugins {
   kotlin("plugin.jpa") version "1.6.21"
 }
 
+allOpen {
+  annotation("javax.persistence.Entity")
+  annotation("javax.persistence.Embeddable")
+  annotation("javax.persistence.MappedSuperclass")
+}
+
 group = "com.cj"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17

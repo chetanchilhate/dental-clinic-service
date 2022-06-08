@@ -37,11 +37,9 @@ class TreatmentService(
       throw ResourceNotFoundException("Treatment", treatmentId)
     }
 
-    val updatedTreatment: Treatment = existingTreatment.get().copy(
-      id = treatmentId,
-      name = treatmentDto.name,
-      fee = treatmentDto.fee
-    )
+    val updatedTreatment = existingTreatment.get()
+    updatedTreatment.name = treatmentDto.name
+    updatedTreatment.fee = treatmentDto.fee
 
     return TreatmentDto(treatmentRepository.save(updatedTreatment))
   }
