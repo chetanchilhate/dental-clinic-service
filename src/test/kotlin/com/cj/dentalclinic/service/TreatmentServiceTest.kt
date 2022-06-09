@@ -247,7 +247,7 @@ internal class TreatmentServiceTest {
 
       every { treatmentRepository.existsById(unknownTreatmentId) } returns false
 
-      verify { treatmentRepository.deleteById(unknownTreatmentId) wasNot Called }
+      verify(exactly = 0) { treatmentRepository.deleteById(unknownTreatmentId) }
 
       assertThatThrownBy { treatmentService.deleteTreatment(unknownTreatmentId) }
         .isInstanceOf(ResourceNotFoundException::class.java)
