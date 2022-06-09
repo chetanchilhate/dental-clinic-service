@@ -36,9 +36,4 @@ class Treatment(
 
   override fun hashCode(): Int = javaClass.hashCode()
 
-  @Override
-  override fun toString(): String {
-    return this::class.simpleName + "(id = $id , name = $name , fee = $fee , clinic = $clinic )"
-  }
-
 }
