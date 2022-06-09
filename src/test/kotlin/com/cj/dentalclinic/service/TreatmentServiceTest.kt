@@ -2,13 +2,11 @@ package com.cj.dentalclinic.service
 
 import com.cj.dentalclinic.ClinicDataStore
 import com.cj.dentalclinic.dto.TreatmentDto
+import com.cj.dentalclinic.entity.Treatment
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.TreatmentRepository
-import io.mockk.clearMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.*
@@ -114,7 +112,7 @@ internal class TreatmentServiceTest {
 
       every { clinicRepository.getReferenceById(clinicId) } returns clinic
 
-      every { treatmentRepository.save(newTreatment) } returns dataStore.saveTreatment(newTreatment)
+      every { treatmentRepository.save(ofType(Treatment::class)) } returns dataStore.saveTreatment(newTreatment)
     }
 
     @AfterEach
@@ -136,7 +134,7 @@ internal class TreatmentServiceTest {
 
       treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment))
 
-      verify(exactly = 1) { treatmentRepository.save(newTreatment) }
+      verify(exactly = 1) { treatmentRepository.save(ofType(Treatment::class)) }
 
     }
 
@@ -214,7 +212,7 @@ internal class TreatmentServiceTest {
 
       every { treatmentRepository.existsById(unknownTreatmentId) } returns false
 
-      verify(exactly = 0) { treatmentRepository.save(updatedTreatment) }
+      verify { treatmentRepository.save(updatedTreatment) wasNot Called }
 
       assertThatThrownBy { treatmentService.updateTreatment(unknownTreatmentId, TreatmentDto(updatedTreatment)) }
         .isInstanceOf(ResourceNotFoundException::class.java)
@@ -249,7 +247,7 @@ internal class TreatmentServiceTest {
 
       every { treatmentRepository.existsById(unknownTreatmentId) } returns false
 
-      verify(exactly = 0) { treatmentRepository.deleteById(unknownTreatmentId) }
+      verify { treatmentRepository.deleteById(unknownTreatmentId) wasNot Called }
 
       assertThatThrownBy { treatmentService.deleteTreatment(unknownTreatmentId) }
         .isInstanceOf(ResourceNotFoundException::class.java)

@@ -1,6 +1,7 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.ClinicDataStore
+import com.cj.dentalclinic.entity.Treatment
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.TreatmentRepository
 import com.cj.dentalclinic.service.TreatmentService
@@ -8,6 +9,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.justRun
+import io.mockk.unmockkAll
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -107,7 +109,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
     @AfterEach
     internal fun tearDown() {
-      clearMocks(treatmentRepository, clinicRepository)
+      unmockkAll()
     }
 
     @Test
@@ -119,7 +121,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
       every { clinicRepository.getReferenceById(clinicId) } returns dataStore.existingClinic()
 
-      every { treatmentRepository.save(newTreatment) } returns dataStore.saveTreatment(newTreatment)
+      every { treatmentRepository.save(ofType(Treatment::class)) } returns dataStore.saveTreatment(newTreatment)
 
       mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", clinicId) {
 
@@ -142,7 +144,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
       every { clinicRepository.getReferenceById(clinicId) } returns dataStore.existingClinic()
 
-      every { treatmentRepository.save(newTreatment) }
+      every { treatmentRepository.save(ofType(Treatment::class)) }
         .throws(DataIntegrityViolationException("Cannot add or update a child row: a foreign key constraint fails"))
 
       mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", clinicId) {
