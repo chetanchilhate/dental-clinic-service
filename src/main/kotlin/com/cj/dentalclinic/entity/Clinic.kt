@@ -8,7 +8,7 @@ import javax.persistence.GenerationType.IDENTITY
 
 @Entity
 @DynamicUpdate
-@Table(name = "t_clinic")
+@Table(name = "t_clinics")
 class Clinic(
 
   @Id
