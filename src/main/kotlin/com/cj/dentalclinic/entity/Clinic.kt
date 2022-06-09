@@ -27,7 +27,7 @@ class Clinic(
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
     other as Clinic
 
-    return if (id != null) id == other.id else name == other.name
+    return id != null && id == other.id
   }
 
   override fun hashCode(): Int = javaClass.hashCode()

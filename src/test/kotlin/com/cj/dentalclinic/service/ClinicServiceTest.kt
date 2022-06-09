@@ -101,7 +101,7 @@ internal class ClinicServiceTest {
 
     @BeforeEach
     internal fun setUp() {
-      every { clinicRepository.save(newClinic) } returns Clinic(newClinicId, "Sujata Dental Clinic")
+      every { clinicRepository.save(ofType(Clinic::class)) } returns Clinic(newClinicId, "Sujata Dental Clinic")
     }
 
     @Test
@@ -109,7 +109,7 @@ internal class ClinicServiceTest {
 
       clinicService.createClinic(ClinicDto(newClinic))
 
-      verify(exactly = 1) { clinicRepository.save(newClinic) }
+      verify(exactly = 1) { clinicRepository.save(ofType(Clinic::class))  }
 
     }
 

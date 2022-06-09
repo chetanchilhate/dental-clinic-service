@@ -104,7 +104,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
       val newClinic = dataStore.newClinic()
 
-      every { clinicRepository.save(newClinic) } returns dataStore.saveClinic(newClinic)
+      every { clinicRepository.save(ofType(Clinic::class)) } returns dataStore.saveClinic(newClinic)
 
       mockMvc.post(CLINIC_BASE_URI) {
 
