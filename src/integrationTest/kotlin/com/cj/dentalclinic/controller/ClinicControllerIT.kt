@@ -8,6 +8,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.justRun
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -120,6 +121,31 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
         }
     }
 
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given clinic name is blank`() {
+
+      mockMvc.post(CLINIC_BASE_URI) {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"name":"           \n     "}"""
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { Matchers.containsString("clinic name is mandatory") }
+
+      }
+
+    }
+
   }
 
   @Nested
@@ -174,6 +200,31 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
         content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
       }
+    }
+
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given clinic name is blank`() {
+
+      mockMvc.put("$CLINIC_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":" \t\r "}"""
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { Matchers.containsString("clinic name is mandatory") }
+
+      }
+
     }
 
   }
