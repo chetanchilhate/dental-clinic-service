@@ -10,6 +10,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.unmockkAll
+import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -159,6 +160,56 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
       }
     }
 
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given treatment name is blank`() {
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", 1) {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"name":" ","fee":${newTreatment.fee}}"""
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { containsString("treatment name is mandatory") }
+
+      }
+
+    }
+
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given treatment fee is less than 100`() {
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/treatments", 1) {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"name":"${newTreatment.name}","fee":10.00}"""
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { containsString("treatment fee must be greater or equal to 100.00") }
+
+      }
+
+    }
+
   }
 
   @Nested
@@ -215,6 +266,56 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
         content { json("""{"code": NOT_FOUND,"message":"No Treatment found with id : $id"}""") }
       }
+    }
+
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given treatment name is blank`() {
+
+      mockMvc.put("$TREATMENT_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":" ","fee":${updatedTreatment.fee}}"""
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { containsString("treatment name is mandatory") }
+
+      }
+
+    }
+
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given treatment fee is less than 100`() {
+
+      mockMvc.put("$TREATMENT_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = """{"id":$id,"name":"${updatedTreatment.name}","fee":10.00}"""
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { containsString("treatment fee must be greater or equal to 100.00") }
+
+      }
+
     }
 
   }
