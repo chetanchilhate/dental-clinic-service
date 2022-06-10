@@ -18,12 +18,12 @@ class TreatmentService(
 
   fun getAllTreatments(clinicId: Int): List<TreatmentDto> = treatmentRepository
     .findAllByClinicId(clinicId)
-    .map { t -> TreatmentDto(t) }
+    .map { TreatmentDto(it) }
     .toList()
 
   fun getTreatmentById(treatmentId: Int): TreatmentDto = treatmentRepository
     .findById(treatmentId)
-    .map { t -> TreatmentDto(t) }
+    .map { TreatmentDto(it) }
     .orElseThrow { ResourceNotFoundException("Treatment", treatmentId) }
 
   fun addTreatment(clinicId: Int, treatmentDto: TreatmentDto): TreatmentDto {

@@ -13,12 +13,12 @@ class ClinicService(private val clinicRepository: ClinicRepository) {
 
   fun getAllClinics(): List<ClinicDto> = clinicRepository
     .findAll()
-    .map { t -> ClinicDto(t) }
+    .map { ClinicDto(it) }
     .toList()
 
   fun getClinicById(clinicId: Int): ClinicDto = clinicRepository
     .findById(clinicId)
-    .map { t -> ClinicDto(t) }
+    .map { ClinicDto(it) }
     .orElseThrow { ResourceNotFoundException("Clinic", clinicId) }
 
   fun createClinic(newClinic: ClinicDto) = ClinicDto(clinicRepository.save(Clinic(newClinic)))
