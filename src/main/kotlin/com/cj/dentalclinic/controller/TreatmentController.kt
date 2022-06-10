@@ -5,6 +5,7 @@ import com.cj.dentalclinic.dto.TreatmentDto
 import com.cj.dentalclinic.service.TreatmentService
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1")
@@ -18,12 +19,12 @@ class TreatmentController(private val treatmentService: TreatmentService) {
 
   @PostMapping("/clinics/{clinicId}/treatments")
   @ResponseStatus(CREATED)
-  fun addTreatment(@PathVariable("clinicId") clinicId: Int, @RequestBody treatmentDto: TreatmentDto) =
+  fun addTreatment(@PathVariable("clinicId") clinicId: Int, @Valid @RequestBody treatmentDto: TreatmentDto) =
     treatmentService.addTreatment(clinicId, treatmentDto)
 
   @PutMapping("/treatments/{id}")
   @ResponseStatus(CREATED)
-  fun updateTreatment(@PathVariable("id") treatmentId: Int, @RequestBody treatmentDto: TreatmentDto) =
+  fun updateTreatment(@PathVariable("id") treatmentId: Int, @Valid @RequestBody treatmentDto: TreatmentDto) =
     treatmentService.updateTreatment(treatmentId, treatmentDto)
 
   @DeleteMapping("/treatments/{id}")
