@@ -8,10 +8,10 @@ data class TreatmentDto(
 
   val id: Int? = null,
 
-  @field:NotBlank(message = "treatment name is mandatory")
+  @field:NotBlank(message = "{error.treatment.name.mandatory}")
   val name: String,
 
-  @field:Min(100, message = "treatment fee must be greater or equal to 100.00")
+  @field:Min(100, message = "{error.treatment.fee.greater-or-equal}")
   val fee: Double
 
 ) {

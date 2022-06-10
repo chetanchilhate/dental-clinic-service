@@ -7,7 +7,7 @@ data class ClinicDto(
 
   val id: Int? = null,
 
-  @field:NotBlank(message = "clinic name is mandatory")
+  @field:NotBlank(message = "{error.clinic.name.mandatory}")
   val name: String
 
 ) {
