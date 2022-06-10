@@ -28,7 +28,7 @@ CREATE TABLE t_doctors
     id            INT          NOT NULL AUTO_INCREMENT,
     email         VARCHAR(100) NOT NULL,
     first_name    VARCHAR(100) NOT NULL,
-    middle_name   VARCHAR(100) DEFAULT '',
+    middle_name   VARCHAR(100) NOT NULL DEFAULT '',
     last_name     VARCHAR(100) NOT NULL,
     qualification VARCHAR(255) NOT NULL,
     clinic_id     INT          NOT NULL,
