@@ -10,7 +10,7 @@ data class DoctorDto(
 
   val firstName: String,
 
-  val middleName: String,
+  val middleName: String = "",
 
   val lastName: String,
 

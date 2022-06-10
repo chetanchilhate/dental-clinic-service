@@ -23,7 +23,7 @@ class Doctor (
   var firstName: String,
 
   @Column(nullable = false)
-  var middleName: String,
+  var middleName: String = "",
 
   @Column(nullable = false)
   var lastName: String,
