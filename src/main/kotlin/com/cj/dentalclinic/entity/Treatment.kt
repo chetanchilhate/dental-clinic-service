@@ -18,7 +18,7 @@ class Treatment(
   @Column(nullable = false)
   var name: String,
 
-  var fee: Double = 0.00,
+  var fee: Double = 100.00,
 
   @ManyToOne(fetch = LAZY, optional = false)
   @JoinColumn(name = "clinic_id", nullable = false, updatable = false)
