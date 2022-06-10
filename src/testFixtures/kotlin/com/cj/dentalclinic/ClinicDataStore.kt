@@ -20,7 +20,10 @@ class ClinicDataStore {
 
   fun findAllClinics() = clinics
 
-  fun findClinicById(clinicId: Int): Optional<Clinic> = clinics.stream().filter { t -> t.id == clinicId }.findFirst()
+  fun findClinicById(clinicId: Int): Optional<Clinic> = clinics
+    .stream()
+    .filter { it.id == clinicId }
+    .findFirst()
 
   fun newClinicId() = 4
 
@@ -30,9 +33,15 @@ class ClinicDataStore {
 
   fun saveClinic(clinic: Clinic) = Clinic(newClinicId(), clinic.name)
 
-  fun findAllTreatmentsByClinicId(clinicId: Int): List<Treatment> = treatments.stream().filter{ t -> t.clinic.id == clinicId }.toList()
+  fun findAllTreatmentsByClinicId(clinicId: Int): List<Treatment> = treatments
+    .stream()
+    .filter{ it.clinic.id == clinicId }
+    .toList()
 
-  fun findTreatmentsById(treatmentId: Int): Optional<Treatment> = treatments.stream().filter{ t -> t.id == treatmentId }.findFirst()
+  fun findTreatmentsById(treatmentId: Int): Optional<Treatment> = treatments
+    .stream()
+    .filter{ it.id == treatmentId }
+    .findFirst()
 
   fun newTreatmentId() = 4
 
