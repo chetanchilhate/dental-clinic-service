@@ -1,6 +1,7 @@
 package com.cj.dentalclinic
 
 import com.cj.dentalclinic.entity.Clinic
+import com.cj.dentalclinic.entity.Doctor
 import com.cj.dentalclinic.entity.Treatment
 import java.util.*
 
@@ -48,5 +49,7 @@ class ClinicDataStore {
   fun newTreatment() = Treatment(name = "Cleaning", fee = 500.00, clinic =  existingClinic())
 
   fun saveTreatment(treatment: Treatment) = Treatment(newTreatmentId() , treatment.name, treatment.fee, treatment.clinic)
+
+  fun newDoctor() = Doctor(email = "atul@gmail.com", firstName = "Atul", lastName = "Kenjale", qualification = "BDS", clinic = clinics[0])
 
 }
