@@ -15,7 +15,7 @@ internal class ClinicControllerTest {
 
   private val clinicController = ClinicController(clinicService)
 
-  private val clinicId = 2
+  private val clinicId = dataStore.validId
 
   private val clinicDto = ClinicDto(dataStore.newClinic())
 
@@ -49,9 +49,11 @@ internal class ClinicControllerTest {
   @Test
   internal fun `should call ClinicService to update Clinic with given id and ClinicDto`() {
 
-    clinicController.updateClinic(clinicId, ClinicDto(clinicId, "Sujata Dental Clinic"))
+    val clinicDto = ClinicDto(dataStore.createClinic(clinicId))
 
-    verify(exactly = 1) { clinicService.updateClinic(clinicId, ClinicDto(clinicId, "Sujata Dental Clinic")) }
+    clinicController.updateClinic(clinicId, clinicDto)
+
+    verify(exactly = 1) { clinicService.updateClinic(clinicId, clinicDto) }
 
   }
 
