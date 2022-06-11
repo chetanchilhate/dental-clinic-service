@@ -51,9 +51,9 @@ internal class TreatmentServiceTest {
     @BeforeEach
     internal fun setup() {
 
-      every { treatmentRepository.findById(treatmentIdExist) } returns dataStore.findTreatmentsById(treatmentIdExist)
+      every { treatmentRepository.findById(treatmentIdExist) } returns dataStore.findTreatmentById(treatmentIdExist)
 
-      every { treatmentRepository.findById(treatmentIdNotExist) } returns dataStore.findTreatmentsById(
+      every { treatmentRepository.findById(treatmentIdNotExist) } returns dataStore.findTreatmentById(
         treatmentIdNotExist
       )
 
@@ -97,9 +97,9 @@ internal class TreatmentServiceTest {
   }
 
   @Nested
-  @DisplayName("createTreatment(treatmentDto: TreatmentDto)")
+  @DisplayName("addTreatment(treatmentDto: TreatmentDto)")
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-  inner class CreateTreatment {
+  inner class AddTreatment {
 
     private val clinicId = 1
 
@@ -160,7 +160,7 @@ internal class TreatmentServiceTest {
 
     private val treatmentId = 3
 
-    private val updatedTreatment = dataStore.findTreatmentsById(treatmentId).get()
+    private val updatedTreatment = dataStore.findTreatmentById(treatmentId).get()
 
     @BeforeEach
     internal fun setup() {
@@ -168,7 +168,7 @@ internal class TreatmentServiceTest {
       every { treatmentRepository.existsById(treatmentId) } returns true
 
       every { treatmentRepository.findById(treatmentId) } returns
-          dataStore.findTreatmentsById(treatmentId)
+          dataStore.findTreatmentById(treatmentId)
 
       every { treatmentRepository.save(updatedTreatment) } returns updatedTreatment
     }

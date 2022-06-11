@@ -39,7 +39,7 @@ class ClinicDataStore {
     .filter{ it.clinic.id == clinicId }
     .toList()
 
-  fun findTreatmentsById(treatmentId: Int): Optional<Treatment> = treatments
+  fun findTreatmentById(treatmentId: Int): Optional<Treatment> = treatments
     .stream()
     .filter{ it.id == treatmentId }
     .findFirst()

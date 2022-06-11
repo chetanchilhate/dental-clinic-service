@@ -76,7 +76,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
       val id = 2
 
-      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentsById(id)
+      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentById(id)
 
       mockMvc.get("$TREATMENT_BASE_URI/$id")
         .andExpect {
@@ -90,7 +90,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
       val id = 4
 
-      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentsById(id)
+      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentById(id)
 
       mockMvc.get("$TREATMENT_BASE_URI/$id")
         .andExpect {
@@ -219,7 +219,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
     private val id = 3
 
-    private val updatedTreatment = dataStore.findTreatmentsById(id).get()
+    private val updatedTreatment = dataStore.findTreatmentById(id).get()
 
     @BeforeEach
     internal fun setUp() {
@@ -231,7 +231,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
       every { treatmentRepository.existsById(id) } returns true
 
-      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentsById(id)
+      every { treatmentRepository.findById(id) } returns dataStore.findTreatmentById(id)
 
       every { treatmentRepository.save(updatedTreatment) } returns updatedTreatment
 
