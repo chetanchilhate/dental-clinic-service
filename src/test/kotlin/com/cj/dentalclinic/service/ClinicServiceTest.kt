@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.service
 
+import com.cj.dentalclinic.ClinicDataStore
 import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.exception.ResourceNotFoundException
@@ -10,11 +11,12 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assumptions.assumeThat
 import org.junit.jupiter.api.*
-import java.util.Optional.empty
-import java.util.Optional.of
 
 internal class ClinicServiceTest {
+
+  private val dataStore = ClinicDataStore()
 
   private val clinicRepository: ClinicRepository = mockk(relaxed = true)
 
@@ -41,18 +43,11 @@ internal class ClinicServiceTest {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class GetClinicById {
 
-    private val clinicIdWithClinic = 2
-
-    private val clinicIdWithOutClinic = 4
+    private val existingClinicId = dataStore.validId
 
     @BeforeEach
     internal fun setup() {
-
-      every { clinicRepository.findById(clinicIdWithClinic) } returns
-          of(Clinic(clinicIdWithClinic, "Smart Dental Clinic"))
-
-      every { clinicRepository.findById(clinicIdWithOutClinic) } returns empty()
-
+      every { clinicRepository.findById(existingClinicId) } returns dataStore.findClinicById(existingClinicId)
     }
 
     @AfterEach
@@ -63,9 +58,9 @@ internal class ClinicServiceTest {
     @Test
     internal fun `should return ClinicDto with given id with a name`() {
 
-      val clinicDto = clinicService.getClinicById(clinicIdWithClinic)
+      val clinicDto = clinicService.getClinicById(existingClinicId)
 
-      assertThat(clinicDto.id).isEqualTo(clinicIdWithClinic)
+      assertThat(clinicDto.id).isEqualTo(existingClinicId)
 
       assertThat(clinicDto.name).isNotBlank
 
@@ -74,18 +69,22 @@ internal class ClinicServiceTest {
     @Test
     internal fun `should call ClinicRepository to find clinic by id`() {
 
-      clinicService.getClinicById(clinicIdWithClinic)
+      clinicService.getClinicById(existingClinicId)
 
-      verify(exactly = 1) { clinicRepository.findById(clinicIdWithClinic) }
+      verify(exactly = 1) { clinicRepository.findById(existingClinicId) }
 
     }
 
     @Test
     internal fun `should throw ResourceNotFoundException when no Clinic found with given id`() {
 
-      assertThatThrownBy { clinicService.getClinicById(clinicIdWithOutClinic) }
+      val nonExistingClinicId = dataStore.invalidId
+
+      every { clinicRepository.findById(nonExistingClinicId) } returns dataStore.findClinicById(nonExistingClinicId)
+
+      assertThatThrownBy { clinicService.getClinicById(nonExistingClinicId) }
         .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Clinic found with id : $clinicIdWithOutClinic")
+        .hasMessage("No Clinic found with id : $nonExistingClinicId")
     }
 
   }
@@ -95,13 +94,11 @@ internal class ClinicServiceTest {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class CreateClinic {
 
-    private val newClinicId = 4
-
-    private val newClinic = Clinic(name = "Sujata Dental Clinic")
+    private val newClinic = dataStore.newClinic()
 
     @BeforeEach
     internal fun setUp() {
-      every { clinicRepository.save(ofType(Clinic::class)) } returns Clinic(newClinicId, "Sujata Dental Clinic")
+      every { clinicRepository.save(ofType(Clinic::class)) } returns dataStore.saveClinic(newClinic)
     }
 
     @Test
@@ -116,9 +113,11 @@ internal class ClinicServiceTest {
     @Test
     internal fun `should return saved Clinic with generated id and given name`() {
 
+      assumeThat(newClinic.id).isNull()
+
       val clinicDto = clinicService.createClinic(ClinicDto(newClinic))
 
-      assertThat(clinicDto.id).isEqualTo(newClinicId)
+      assertThat(clinicDto.id).isNotNull
 
       assertThat(clinicDto.name).isEqualTo(newClinic.name)
 
@@ -131,9 +130,9 @@ internal class ClinicServiceTest {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class UpdateClinic {
 
-    private val updatedClinic = Clinic(2, "Sujata Dental Clinic")
+    private val existingClinicId = dataStore.validId
 
-    private val existingClinicId = 3
+    private val updatedClinic = dataStore.createClinic(existingClinicId)
 
     @BeforeEach
     internal fun setUp() {
@@ -174,7 +173,7 @@ internal class ClinicServiceTest {
     @Test
     internal fun `should call ClinicRepository to delete Clinic by id when Clinic exists`() {
 
-      val existingClinicId = 4
+      val existingClinicId = dataStore.validId
 
       every { clinicRepository.existsById(existingClinicId) } returns true
 
@@ -187,15 +186,13 @@ internal class ClinicServiceTest {
     @Test
     internal fun `should throw ResourceNotFoundException when Clinic does not exists`() {
 
-      val newClinicId = 3
+      val nonExistingClinicId = dataStore.invalidId
 
-      every { clinicRepository.existsById(newClinicId) } returns false
+      verify(exactly = 0) { clinicRepository.deleteById(nonExistingClinicId) }
 
-      verify(exactly = 0) { clinicRepository.deleteById(newClinicId) }
-
-      assertThatThrownBy { clinicService.deleteClinic(newClinicId) }
+      assertThatThrownBy { clinicService.deleteClinic(nonExistingClinicId) }
         .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Clinic found with id : $newClinicId")
+        .hasMessage("No Clinic found with id : $nonExistingClinicId")
 
     }
 
