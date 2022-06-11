@@ -43,6 +43,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.mockk:mockk:1.12.4")
+  testFixturesImplementation("io.github.serpro69:kotlin-faker:1.11.0")
 }
 
 tasks.withType<KotlinCompile> {
