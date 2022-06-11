@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.controller
 
+import com.cj.dentalclinic.ClinicDataStore
 import com.cj.dentalclinic.dto.TreatmentDto
 import com.cj.dentalclinic.service.TreatmentService
 import io.mockk.mockk
@@ -8,14 +9,20 @@ import org.junit.jupiter.api.Test
 
 internal class TreatmentControllerTest {
 
+  private val dataStore = ClinicDataStore()
+
   private val treatmentService: TreatmentService = mockk(relaxed = true)
 
   private val treatmentController = TreatmentController(treatmentService)
 
+  private val clinicId = 1
+
+  private val treatmentId = 1
+
+  private val treatmentDto = TreatmentDto(dataStore.newTreatment())
+
   @Test
   internal fun `should call TreatmentService to get all the treatments for given clinic id`() {
-
-    val clinicId = 1
 
     treatmentController.getAllTreatments(clinicId)
 
@@ -26,8 +33,6 @@ internal class TreatmentControllerTest {
   @Test
   internal fun `should call TreatmentService to get treatment for given treatment id`() {
 
-    val treatmentId = 1
-
     treatmentController.getTreatmentById(treatmentId)
 
     verify(exactly = 1) { treatmentService.getTreatmentById(treatmentId) }
@@ -36,10 +41,6 @@ internal class TreatmentControllerTest {
 
   @Test
   internal fun `should call TreatmentService to add treatment for given clinicId and treatment`() {
-
-    val clinicId = 2
-
-    val treatmentDto = TreatmentDto(name = "Filling", fee = 500.00)
 
     treatmentController.addTreatment(clinicId, treatmentDto)
 
@@ -50,10 +51,6 @@ internal class TreatmentControllerTest {
   @Test
   internal fun `should call TreatmentService to update treatment for given id and treatment`() {
 
-    val treatmentId = 1
-
-    val treatmentDto = TreatmentDto(name = "Filling", fee = 250.00)
-
     treatmentController.updateTreatment(treatmentId, treatmentDto)
 
     verify(exactly = 1) { treatmentService.updateTreatment(treatmentId,treatmentDto) }
@@ -62,8 +59,6 @@ internal class TreatmentControllerTest {
 
   @Test
   internal fun `should call TreatmentService to delete treatment for given treatment id`() {
-
-    val treatmentId = 1
 
     treatmentController.deleteTreatment(treatmentId)
 
