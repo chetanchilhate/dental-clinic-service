@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.entity
 
+import com.cj.dentalclinic.dto.TreatmentDto
 import org.hibernate.Hibernate
 import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
@@ -25,6 +26,12 @@ class Treatment(
   val clinic: Clinic
 
 ) {
+
+  fun update(treatmentDto: TreatmentDto): Treatment {
+    name = treatmentDto.name
+    fee = treatmentDto.fee
+    return this
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

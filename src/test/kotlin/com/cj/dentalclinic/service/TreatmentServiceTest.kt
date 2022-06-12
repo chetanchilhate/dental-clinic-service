@@ -223,13 +223,7 @@ internal class TreatmentServiceTest {
 
       val updatedTreatmentDto = treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
 
-      assertThat(updatedTreatmentDto).isEqualTo(
-        TreatmentDto(
-          updatedTreatment.id,
-          updatedTreatment.name,
-          updatedTreatment.fee
-        )
-      )
+      assertThat(updatedTreatmentDto).isEqualTo(TreatmentDto(updatedTreatment))
 
     }
 

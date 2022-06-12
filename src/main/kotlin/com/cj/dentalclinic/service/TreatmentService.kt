@@ -42,14 +42,9 @@ class TreatmentService(
       throw ResourceNotFoundException("Treatment", treatmentId)
     }
 
-    val updatedTreatment = treatmentRepository
-      .findById(treatmentId)
-      .get()
+    val existingTreatment = treatmentRepository.findById(treatmentId).get()
 
-    updatedTreatment.name = treatmentDto.name
-    updatedTreatment.fee = treatmentDto.fee
-
-    return TreatmentDto(treatmentRepository.save(updatedTreatment))
+    return TreatmentDto(treatmentRepository.save(existingTreatment.update(treatmentDto)))
   }
 
   fun deleteTreatment(treatmentId: Int) =
