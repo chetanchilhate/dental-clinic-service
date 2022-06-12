@@ -6,7 +6,11 @@ import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.DoctorRepository
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Service
+@Transactional
 class DoctorService(private val doctorRepository: DoctorRepository, private val clinicRepository: ClinicRepository) {
 
   fun getAllDoctors(clinicId: Int): List<DoctorDto> = doctorRepository
