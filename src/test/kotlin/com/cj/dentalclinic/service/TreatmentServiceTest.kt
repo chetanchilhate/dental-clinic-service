@@ -50,7 +50,9 @@ internal class TreatmentServiceTest {
 
     @BeforeEach
     internal fun setup() {
-      every { treatmentRepository.findById(existingTreatmentId) } returns dataStore.findTreatmentById(existingTreatmentId)
+      every { treatmentRepository.findById(existingTreatmentId) } returns dataStore.findTreatmentById(
+        existingTreatmentId
+      )
     }
 
     @AfterEach
@@ -85,7 +87,9 @@ internal class TreatmentServiceTest {
 
       val nonExistingTreatmentId = dataStore.invalidId
 
-      every { treatmentRepository.findById(nonExistingTreatmentId) } returns dataStore.findTreatmentById(nonExistingTreatmentId)
+      every { treatmentRepository.findById(nonExistingTreatmentId) } returns dataStore.findTreatmentById(
+        nonExistingTreatmentId
+      )
 
       assertThatThrownBy { treatmentService.getTreatmentById(nonExistingTreatmentId) }
         .isInstanceOf(ResourceNotFoundException::class.java)
@@ -214,14 +218,20 @@ internal class TreatmentServiceTest {
 
     }
 
-  @Test
-  internal fun `should return updated TreatmentDto when update treatment is invoked`() {
+    @Test
+    internal fun `should return updated TreatmentDto when update treatment is invoked`() {
 
-    val updatedTreatmentDto = treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
+      val updatedTreatmentDto = treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
 
-    assertThat(updatedTreatmentDto).isEqualTo(TreatmentDto(updatedTreatment.id, updatedTreatment.name, updatedTreatment.fee))
+      assertThat(updatedTreatmentDto).isEqualTo(
+        TreatmentDto(
+          updatedTreatment.id,
+          updatedTreatment.name,
+          updatedTreatment.fee
+        )
+      )
 
-  }
+    }
 
     @Test
     internal fun `should throw ResourceNotFoundException when Treatment does not exists`() {
@@ -250,7 +260,9 @@ internal class TreatmentServiceTest {
 
       val existingTreatmentId = dataStore.validId
 
-      every { treatmentRepository.existsById(existingTreatmentId) } returns dataStore.treatmentExistById(existingTreatmentId)
+      every { treatmentRepository.existsById(existingTreatmentId) } returns dataStore.treatmentExistById(
+        existingTreatmentId
+      )
 
       treatmentService.deleteTreatment(existingTreatmentId)
 
@@ -263,7 +275,9 @@ internal class TreatmentServiceTest {
 
       val nonExistingTreatmentId = dataStore.invalidId
 
-      every { treatmentRepository.existsById(nonExistingTreatmentId) } returns dataStore.treatmentExistById(nonExistingTreatmentId)
+      every { treatmentRepository.existsById(nonExistingTreatmentId) } returns dataStore.treatmentExistById(
+        nonExistingTreatmentId
+      )
 
       verify(exactly = 0) { treatmentRepository.deleteById(nonExistingTreatmentId) }
 
