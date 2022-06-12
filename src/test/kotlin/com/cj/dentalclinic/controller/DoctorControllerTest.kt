@@ -26,7 +26,7 @@ internal class DoctorControllerTest {
 
     doctorController.getAllDoctors(clinicId)
 
-    verify(exactly = this.clinicId) { doctorService.getAllDoctors(clinicId) }
+    verify(exactly = 1) { doctorService.getAllDoctors(clinicId) }
 
   }
 
