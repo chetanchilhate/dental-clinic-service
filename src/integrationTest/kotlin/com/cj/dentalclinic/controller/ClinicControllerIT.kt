@@ -1,6 +1,7 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.ClinicDataStore
+import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.service.ClinicService
@@ -8,7 +9,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.justRun
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -34,7 +35,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
     @BeforeEach
     internal fun setup() {
-      every { clinicRepository.findAll() } returns dataStore.findAllClinics()
+      every { clinicRepository.findAll() } returns dataStore.clinics
     }
 
     @Test
@@ -42,6 +43,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
       mockMvc.get(CLINIC_BASE_URI)
         .andExpect {
           status { isOk() }
+          content { contentType(APPLICATION_JSON) }
         }
     }
 
@@ -49,10 +51,9 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     internal fun `should return json array of all the clinics`() {
       mockMvc.get(CLINIC_BASE_URI)
         .andExpect {
-          content { json("""[
-            |{"id":1,"name":"Sharda Dental Clinic"},
-            |{"id":2,"name":"Smart Dental Clinic"},
-            |{"id":3,"name":"Sonal Dental Clinic"}]""".trimMargin()) }
+          jsonPath("$") { hasSize<ClinicDto>(dataStore.maxId) }
+          jsonPath("$[0].id") { lessThanOrEqualTo(dataStore.maxId) }
+          jsonPath("$[0].name") { endsWith(dataStore.dcSuffix) }
         }
     }
 
@@ -66,21 +67,30 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     @Test
     internal fun `given id should return 200 status and a json of Clinic`() {
 
-      val id = 2
+      val id = dataStore.validId
 
       every { clinicRepository.findById(id) } returns dataStore.findClinicById(id)
 
       mockMvc.get("$CLINIC_BASE_URI/$id")
         .andExpect {
+
           status { isOk() }
-          content { json("""{"id":$id,"name":"Smart Dental Clinic"}""") }
+
+          content { contentType(APPLICATION_JSON) }
+
+        }.andExpect {
+
+          jsonPath("$.id") { value(id) }
+
+          jsonPath("$.name") { endsWith(dataStore.dcSuffix) }
+
         }
     }
 
     @Test
     internal fun `given id should return 404 status and a json of ErrorResponse`() {
 
-      val id = 4
+      val id = dataStore.invalidId
 
       every { clinicRepository.findById(id) } returns dataStore.findClinicById(id)
 
@@ -101,8 +111,6 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     @Test
     internal fun `should return 201 status and json of clinic with generated id and given name`() {
 
-      val newClinicId = dataStore.newClinicId()
-
       val newClinic = dataStore.newClinic()
 
       every { clinicRepository.save(ofType(Clinic::class)) } returns dataStore.saveClinic(newClinic)
@@ -115,10 +123,18 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
       }.andExpect {
 
-          status { isCreated() }
+        status { isCreated() }
 
-          content { json("""{"id":$newClinicId,"name":"${newClinic.name}"}""") }
-        }
+        content { contentType(APPLICATION_JSON) }
+
+      }.andExpect {
+
+        jsonPath("$.id") { lessThanOrEqualTo(dataStore.maxId) }
+
+        jsonPath("$.name") { value(newClinic.name) }
+
+      }
+
     }
 
     @Test
@@ -140,7 +156,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
         jsonPath("$.code") { value("BAD_REQUEST") }
 
-        jsonPath("$.message") { Matchers.containsString("clinic name is mandatory") }
+        jsonPath("$.message") { containsString("clinic name is mandatory") }
 
       }
 
@@ -153,9 +169,9 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class UpdateClinic {
 
-    private val id = 4
+    private val id = dataStore.validId
 
-    private val updatedClinic = Clinic(id, "Sujata Dental Clinic")
+    private val updatedClinic = dataStore.createClinic(id)
 
     @BeforeEach
     internal fun setUp() {
@@ -165,7 +181,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     @Test
     internal fun `should return 201 status and json of updated clinic when clinic exists`() {
 
-      every { clinicRepository.existsById(id) } returns true
+      every { clinicRepository.existsById(id) } returns dataStore.clinicExistById(id)
 
       every { clinicRepository.save(updatedClinic) } returns updatedClinic
 
@@ -221,7 +237,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
         jsonPath("$.code") { value("BAD_REQUEST") }
 
-        jsonPath("$.message") { Matchers.containsString("clinic name is mandatory") }
+        jsonPath("$.message") { containsString("clinic name is mandatory") }
 
       }
 
@@ -234,41 +250,38 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class DeleteClinic {
 
-    private val id = 4
-
-    @BeforeEach
-    internal fun setUp() {
-      clearMocks(clinicRepository)
-    }
-
     @Test
     internal fun `should return 200 status and empty json when clinic exists`() {
 
-      every { clinicRepository.existsById(id) } returns true
+      val id = dataStore.validId
+
+      every { clinicRepository.existsById(id) } returns dataStore.clinicExistById(id)
 
       justRun { clinicRepository.deleteById(id) }
 
       mockMvc.delete("$CLINIC_BASE_URI/$id")
         .andExpect {
 
-        status { isOk() }
+          status { isOk() }
 
-        content { json("{}") }
-      }
+          content { json("{}") }
+        }
     }
 
     @Test
     internal fun `should return 404 status and json of ErrorResponse when clinic does not exists`() {
 
-      every { clinicRepository.existsById(id) } returns false
+      val id = dataStore.invalidId
+
+      every { clinicRepository.existsById(id) } returns dataStore.clinicExistById(id)
 
       mockMvc.delete("$CLINIC_BASE_URI/$id")
         .andExpect {
 
-        status { isNotFound() }
+          status { isNotFound() }
 
-        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
-      }
+          content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $id"}""") }
+        }
     }
 
   }
