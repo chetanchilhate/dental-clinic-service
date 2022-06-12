@@ -1,6 +1,7 @@
 package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.dto.DoctorDto
+import com.cj.dentalclinic.dto.EmptyResponse
 import com.cj.dentalclinic.service.DoctorService
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.*
@@ -24,6 +25,10 @@ class DoctorController(private val doctorService: DoctorService) {
   @ResponseStatus(CREATED)
   fun updateDoctor(@PathVariable("id") doctorId: Int, @Valid @RequestBody doctorDto: DoctorDto) = doctorService.updateDoctor(doctorId, doctorDto)
 
-  fun deleteDoctor(doctorId: Int) = doctorService.deleteDoctor(doctorId)
+  @DeleteMapping("/doctors/{id}")
+  fun deleteDoctor(@PathVariable("id") doctorId: Int): EmptyResponse {
+    doctorService.deleteDoctor(doctorId)
+    return EmptyResponse()
+  }
 
 }

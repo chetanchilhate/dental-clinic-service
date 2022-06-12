@@ -9,6 +9,7 @@ import com.cj.dentalclinic.service.DoctorService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.unmockkAll
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.containsString
@@ -19,10 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 import java.util.Optional.ofNullable
 
 const val DOCTOR_BASE_URI = "/api/v1/doctors"
@@ -353,6 +351,50 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
       }
 
+    }
+
+  }
+
+  @Nested
+  @DisplayName("deleteDoctor(id: Int)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class DeleteDoctor {
+
+    private val id = dataStore.validId
+
+    @BeforeEach
+    internal fun setUp() {
+      clearMocks(doctorRepository)
+    }
+
+    @Test
+    internal fun `should return 200 status and empty json when doctor exists`() {
+
+      every { doctorRepository.existsById(id) } returns true
+
+      justRun { doctorRepository.deleteById(id) }
+
+      mockMvc.delete("$DOCTOR_BASE_URI/{id}", id)
+        .andExpect {
+
+          status { isOk() }
+
+          content { json("{}") }
+        }
+    }
+
+    @Test
+    internal fun `should return 404 status and json of ErrorResponse when doctor does not exists`() {
+
+      every { doctorRepository.existsById(id) } returns false
+
+      mockMvc.delete("$DOCTOR_BASE_URI/{id}", id)
+        .andExpect {
+
+          status { isNotFound() }
+
+          content { json("""{"code": NOT_FOUND,"message":"No Doctor found with id : $id"}""") }
+        }
     }
 
   }
