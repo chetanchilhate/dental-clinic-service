@@ -51,9 +51,10 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
     internal fun `should return json array of all the clinics`() {
       mockMvc.get(CLINIC_BASE_URI)
         .andExpect {
-          jsonPath("$") { hasSize<ClinicDto>(dataStore.maxId) }
-          jsonPath("$[0].id") { lessThanOrEqualTo(dataStore.maxId) }
-          jsonPath("$[0].name") { endsWith(dataStore.dcSuffix) }
+          jsonPath("$") { isArray() }
+          jsonPath("$") { value(hasSize<ClinicDto>(dataStore.maxId)) }
+          jsonPath("$[0].id") { value(lessThanOrEqualTo(dataStore.maxId)) }
+          jsonPath("$[0].name") { value(endsWith(dataStore.dcSuffix)) }
         }
     }
 
@@ -82,7 +83,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
           jsonPath("$.id") { value(id) }
 
-          jsonPath("$.name") { endsWith(dataStore.dcSuffix) }
+          jsonPath("$.name") { value(endsWith(dataStore.dcSuffix)) }
 
         }
     }
@@ -129,7 +130,7 @@ internal class ClinicControllerIT(@Autowired private val mockMvc: MockMvc) {
 
       }.andExpect {
 
-        jsonPath("$.id") { lessThanOrEqualTo(dataStore.maxId) }
+        jsonPath("$.id") { isNumber() }
 
         jsonPath("$.name") { value(newClinic.name) }
 
