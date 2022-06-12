@@ -24,7 +24,7 @@ class ClinicDataStore {
 
   val validId = random.nextInt(1, maxId)
 
-  val invalidId = random.nextInt(maxId, 100)
+  val invalidId = random.nextInt(maxId + 1, 100)
 
   val parentIdWithData = random.nextInt(1, maxParentId)
 

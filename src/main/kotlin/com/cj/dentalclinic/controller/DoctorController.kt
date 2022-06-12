@@ -20,7 +20,9 @@ class DoctorController(private val doctorService: DoctorService) {
   @ResponseStatus(CREATED)
   fun addDoctor(@PathVariable("clinicId") clinicId: Int, @Valid @RequestBody doctorDto: DoctorDto) = doctorService.addDoctor(clinicId, doctorDto)
 
-  fun updateDoctor(doctorId: Int, doctorDto: DoctorDto) = doctorService.updateDoctor(doctorId, doctorDto)
+  @PutMapping("/doctors/{id}")
+  @ResponseStatus(CREATED)
+  fun updateDoctor(@PathVariable("id") doctorId: Int, @Valid @RequestBody doctorDto: DoctorDto) = doctorService.updateDoctor(doctorId, doctorDto)
 
   fun deleteDoctor(doctorId: Int) = doctorService.deleteDoctor(doctorId)
 

@@ -7,6 +7,7 @@ import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.DoctorRepository
 import com.cj.dentalclinic.service.DoctorService
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.unmockkAll
 import org.hamcrest.Matchers
@@ -17,10 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import java.util.Optional.ofNullable
 
 const val DOCTOR_BASE_URI = "/api/v1/doctors"
@@ -37,6 +39,14 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
   @MockkBean
   private lateinit var doctorRepository: DoctorRepository
 
+  private val invalidDoctorJSON = """
+      |{
+        |"email":" ",
+        |"firstName":" ",
+        |"middleName":" ",
+        |"lastName":" ",
+        |"qualification": " "
+      |}""".trimMargin()
 
   @Nested
   @DisplayName("getAllDoctorsByClinicId")
@@ -68,7 +78,7 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
       mockMvc.get("$CLINIC_BASE_URI/$clinicId/doctors")
         .andExpect {
 
-          content { contentType(MediaType.APPLICATION_JSON) }
+          content { contentType(APPLICATION_JSON) }
 
         }.andExpect {
 
@@ -153,15 +163,6 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
         |"qualification": "${newDoctor.qualification}"
       |}""".trimMargin()
 
-    private val invalidDoctorJSON = """
-      |{
-        |"email":" ",
-        |"firstName":" ",
-        |"middleName":" ",
-        |"lastName":" ",
-        |"qualification": " "
-      |}""".trimMargin()
-
     @AfterEach
     internal fun tearDown() {
       unmockkAll()
@@ -177,7 +178,7 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
       mockMvc.post("$CLINIC_BASE_URI/{clinicId}/doctors", clinicId) {
 
-        contentType = MediaType.APPLICATION_JSON
+        contentType = APPLICATION_JSON
 
         content = newDoctorJSON
 
@@ -185,7 +186,7 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
         status { isCreated() }
 
-        content { contentType(MediaType.APPLICATION_JSON) }
+        content { contentType(APPLICATION_JSON) }
 
       }.andExpect {
 
@@ -214,7 +215,7 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
       mockMvc.post("$CLINIC_BASE_URI/{clinicId}/doctors", clinicId) {
 
-        contentType = MediaType.APPLICATION_JSON
+        contentType = APPLICATION_JSON
 
         content = newDoctorJSON
 
@@ -229,7 +230,7 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
       mockMvc.post("$CLINIC_BASE_URI/{clinicId}/doctors", dataStore.invalidId) {
 
-        contentType = MediaType.APPLICATION_JSON
+        contentType = APPLICATION_JSON
 
         content = invalidDoctorJSON
 
@@ -237,7 +238,106 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
         status { isBadRequest() }
 
-        content { content { contentType(MediaType.APPLICATION_JSON) } }
+        content { content { contentType(APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { value(containsString("doctor email is invalid")) }
+
+        jsonPath("$.message") { value(containsString("doctor first name is mandatory")) }
+
+        jsonPath("$.message") { value(containsString("doctor last name is mandatory")) }
+
+        jsonPath("$.message") { value(containsString("doctor qualification is mandatory")) }
+
+      }
+
+    }
+
+  }
+
+  @Nested
+  @DisplayName("updateDoctor(id: Int, doctor: DoctorDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  internal inner class UpdateDoctor {
+
+    private val id = dataStore.validId
+
+    private val updatedDoctor = dataStore.createDoctor(id)
+
+    private val updatedDoctorJSON = """
+      |{
+        |"id":${updatedDoctor.id},
+        |"email":"${updatedDoctor.email}",
+        |"firstName":"${updatedDoctor.firstName}",
+        |"middleName":"${updatedDoctor.middleName}",
+        |"lastName":"${updatedDoctor.lastName}",
+        |"qualification": "${updatedDoctor.qualification}"
+      |}""".trimMargin()
+
+    @BeforeEach
+    internal fun setUp() {
+      clearMocks(clinicRepository)
+    }
+
+    @Test
+    internal fun `should return 201 status and json of updated doctor when doctor exists`() {
+
+      every { doctorRepository.existsById(id) } returns true
+
+      every { doctorRepository.findById(id) } returns dataStore.findDoctorById(id)
+
+      every { doctorRepository.save(updatedDoctor) } returns dataStore.saveDoctor(updatedDoctor)
+
+      mockMvc.put("$DOCTOR_BASE_URI/{id}", id) {
+
+        contentType = APPLICATION_JSON
+
+        content = updatedDoctorJSON
+
+      }.andExpect {
+
+        status { isCreated() }
+
+        content { json(updatedDoctorJSON) }
+      }
+    }
+
+    @Test
+    internal fun `should return 404 status and json of ErrorResponse when doctor does not exists`() {
+
+      every { doctorRepository.existsById(id) } returns false
+
+      mockMvc.put("$DOCTOR_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = updatedDoctorJSON
+
+      }.andExpect {
+
+        status { isNotFound() }
+
+        content { json("""{"code": NOT_FOUND,"message":"No Doctor found with id : $id"}""") }
+      }
+    }
+
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given any invalid field in request`() {
+
+      mockMvc.put("$DOCTOR_BASE_URI/$id") {
+
+        contentType = APPLICATION_JSON
+
+        content = invalidDoctorJSON
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(APPLICATION_JSON) } }
 
       }.andExpect {
 
