@@ -46,10 +46,19 @@ class Doctor (
     clinic = clinic
   )
 
+  fun update(doctorDto: DoctorDto): Doctor {
+    email = doctorDto.email
+    firstName = doctorDto.firstName
+    middleName = doctorDto.middleName
+    lastName = doctorDto.lastName
+    qualification = doctorDto.qualification
+    return this
+  }
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-    other as Treatment
+    other as Doctor
 
     return id != null && id == other.id
   }
