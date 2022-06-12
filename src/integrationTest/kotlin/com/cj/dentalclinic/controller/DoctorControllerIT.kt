@@ -16,6 +16,9 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import java.util.Optional.ofNullable
+
+const val DOCTOR_BASE_URI = "/api/v1/doctors"
 
 @WebMvcTest(DoctorController::class)
 @Import(DoctorService::class)
@@ -78,6 +81,50 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
 
           jsonPath("$[0].qualification") { isNotEmpty() }
 
+        }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("getDoctorById(id: Int)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class GetDoctorById {
+
+    @Test
+    internal fun `given id should return 200 status and a json of Doctor`() {
+
+      val id = dataStore.validId
+
+      val existingDoctor = dataStore.findDoctorById(id).get()
+
+      every { doctorRepository.findById(id) } returns ofNullable(existingDoctor)
+
+      mockMvc.get("$DOCTOR_BASE_URI/$id")
+        .andExpect {
+          status { isOk() }
+          content { json("""{
+            |"id":$id,
+            |"email":"${existingDoctor.email}",
+            |"firstName":"${existingDoctor.firstName}",
+            |"middleName":"${existingDoctor.middleName}",
+            |"lastName":"${existingDoctor.lastName}",
+            |"qualification": "${existingDoctor.qualification}"
+            |}""".trimMargin()) }
+        }
+    }
+
+    @Test
+    internal fun `given id should return 404 status and a json of ErrorResponse`() {
+
+      val id = dataStore.invalidId
+
+      every { doctorRepository.findById(id) } returns dataStore.findDoctorById(id)
+
+      mockMvc.get("$DOCTOR_BASE_URI/$id")
+        .andExpect {
+          status { isNotFound() }
+          content { json("""{"code": NOT_FOUND,"message":"No Doctor found with id : $id"}""") }
         }
     }
 

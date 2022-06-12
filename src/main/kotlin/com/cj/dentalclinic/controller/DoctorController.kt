@@ -14,7 +14,8 @@ class DoctorController(private val doctorService: DoctorService) {
   @GetMapping("/clinics/{clinicId}/doctors")
   fun getAllDoctors(@PathVariable("clinicId") clinicId: Int) = doctorService.getAllDoctors(clinicId)
 
-  fun getDoctorById(doctorId: Int) = doctorService.getDoctorById(doctorId)
+  @GetMapping("doctors/{id}")
+  fun getDoctorById(@PathVariable("id") doctorId: Int) = doctorService.getDoctorById(doctorId)
 
   fun addDoctor(clinicId: Int, doctorDto: DoctorDto) = doctorService.addDoctor(clinicId, doctorDto)
 
