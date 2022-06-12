@@ -2,20 +2,25 @@ package com.cj.dentalclinic.controller
 
 import com.cj.dentalclinic.ClinicDataStore
 import com.cj.dentalclinic.dto.DoctorDto
+import com.cj.dentalclinic.entity.Doctor
 import com.cj.dentalclinic.repository.ClinicRepository
 import com.cj.dentalclinic.repository.DoctorRepository
 import com.cj.dentalclinic.service.DoctorService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.unmockkAll
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.lessThanOrEqualTo
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 import java.util.Optional.ofNullable
 
 const val DOCTOR_BASE_URI = "/api/v1/doctors"
@@ -126,6 +131,128 @@ class DoctorControllerIT(@Autowired val mockMvc: MockMvc) {
           status { isNotFound() }
           content { json("""{"code": NOT_FOUND,"message":"No Doctor found with id : $id"}""") }
         }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("addDoctorToClinic(clinicId: Int, doctorDto: DoctorDto)")
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  inner class AddDoctorToClinic {
+
+    private val newDoctor = dataStore.newDoctor()
+
+    private val clinicId = dataStore.validId
+
+    private val newDoctorJSON = """
+      |{
+        |"email":"${newDoctor.email}",
+        |"firstName":"${newDoctor.firstName}",
+        |"middleName":"${newDoctor.middleName}",
+        |"lastName":"${newDoctor.lastName}",
+        |"qualification": "${newDoctor.qualification}"
+      |}""".trimMargin()
+
+    private val invalidDoctorJSON = """
+      |{
+        |"email":" ",
+        |"firstName":" ",
+        |"middleName":" ",
+        |"lastName":" ",
+        |"qualification": " "
+      |}""".trimMargin()
+
+    @AfterEach
+    internal fun tearDown() {
+      unmockkAll()
+    }
+
+    @Test
+    internal fun `should return 201 status and json of clinic with generated id and given name`() {
+
+
+      every { clinicRepository.getReferenceById(clinicId) } returns dataStore.findClinicById(clinicId).get()
+
+      every { doctorRepository.save(ofType(Doctor::class)) } returns dataStore.saveDoctor(newDoctor)
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/doctors", clinicId) {
+
+        contentType = MediaType.APPLICATION_JSON
+
+        content = newDoctorJSON
+
+      }.andExpect {
+
+        status { isCreated() }
+
+        content { contentType(MediaType.APPLICATION_JSON) }
+
+      }.andExpect {
+
+        jsonPath("$.id") { isNumber() }
+
+        jsonPath("$.email") { isNotEmpty() }
+
+        jsonPath("$.firstName") { isNotEmpty() }
+
+        jsonPath("$.lastName") { isNotEmpty() }
+
+        jsonPath("$.qualification") { isNotEmpty() }
+
+      }
+    }
+
+    @Test
+    internal fun `given clinic id should return 404 status and a json of ErrorResponse`() {
+
+      val clinicId = dataStore.invalidId
+
+      every { clinicRepository.getReferenceById(clinicId) } returns dataStore.createClinic(clinicId)
+
+      every { doctorRepository.save(ofType(Doctor::class)) }
+        .throws(DataIntegrityViolationException("Cannot add or update a child row: a foreign key constraint fails"))
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/doctors", clinicId) {
+
+        contentType = MediaType.APPLICATION_JSON
+
+        content = newDoctorJSON
+
+      }.andExpect {
+        status { isNotFound() }
+        content { json("""{"code": NOT_FOUND,"message":"No Clinic found with id : $clinicId"}""") }
+      }
+    }
+
+    @Test
+    internal fun `should return 400 status and json of ErrorResponse given any invalid field in request`() {
+
+      mockMvc.post("$CLINIC_BASE_URI/{clinicId}/doctors", dataStore.invalidId) {
+
+        contentType = MediaType.APPLICATION_JSON
+
+        content = invalidDoctorJSON
+
+      }.andExpect {
+
+        status { isBadRequest() }
+
+        content { content { contentType(MediaType.APPLICATION_JSON) } }
+
+      }.andExpect {
+
+        jsonPath("$.code") { value("BAD_REQUEST") }
+
+        jsonPath("$.message") { value(containsString("doctor email is invalid")) }
+
+        jsonPath("$.message") { value(containsString("doctor first name is mandatory")) }
+
+        jsonPath("$.message") { value(containsString("doctor last name is mandatory")) }
+
+        jsonPath("$.message") { value(containsString("doctor qualification is mandatory")) }
+
+      }
+
     }
 
   }
