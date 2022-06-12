@@ -5,10 +5,7 @@ import com.cj.dentalclinic.dto.ClinicDto
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.exception.ResourceNotFoundException
 import com.cj.dentalclinic.repository.ClinicRepository
-import io.mockk.clearMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assumptions.assumeThat
@@ -155,7 +152,7 @@ internal class ClinicServiceTest {
     @Test
     internal fun `should throw ResourceNotFoundException when Clinic does not exists`() {
 
-      verify(exactly = 0) { clinicRepository.save(updatedClinic) }
+      verify { clinicRepository.save(updatedClinic) wasNot Called }
 
       assertThatThrownBy { clinicService.updateClinic(existingClinicId, ClinicDto(updatedClinic)) }
         .isInstanceOf(ResourceNotFoundException::class.java)
