@@ -7,3 +7,6 @@ INSERT INTO t_treatments (id, name, fee, clinic_id) VALUES (2, 'Root Canal', 250
 
 INSERT INTO t_doctors (email, first_name, last_name, qualification, clinic_id)
 VALUES ('atul@gmail.com', 'Atul', 'Kenjale', 'BDS', 1);
+
+INSERT INTO t_patients (first_name, last_name, age, sex, doctor_id)
+VALUES ('Chetan', 'Chilhate', 29, 'MALE', 1);
