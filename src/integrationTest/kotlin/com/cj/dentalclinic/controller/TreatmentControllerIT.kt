@@ -206,7 +206,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
         jsonPath("$.code") { value("BAD_REQUEST") }
 
-        jsonPath("$.message") { containsString("treatment name is mandatory") }
+        jsonPath("$.message") { value(containsString("treatment name is mandatory")) }
 
       }
 
@@ -231,7 +231,7 @@ internal class TreatmentControllerIT(@Autowired val mockMvc: MockMvc) {
 
         jsonPath("$.code") { value("BAD_REQUEST") }
 
-        jsonPath("$.message") { containsString("treatment fee must be greater or equal to 100.00") }
+        jsonPath("$.message") { value(containsString("treatment fee must be greater or equal to 100.00")) }
 
       }
 
