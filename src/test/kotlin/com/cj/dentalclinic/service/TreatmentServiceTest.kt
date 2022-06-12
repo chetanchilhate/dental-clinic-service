@@ -9,7 +9,9 @@ import com.cj.dentalclinic.repository.TreatmentRepository
 import io.mockk.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assumptions.assumeThat
 import org.junit.jupiter.api.*
+import org.springframework.dao.DataIntegrityViolationException
 
 internal class TreatmentServiceTest {
 
@@ -29,7 +31,7 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should call TreatmentsRepository to findAll treatments by clinic id`() {
 
-      val clinicId = 1
+      val clinicId = dataStore.validId
 
       treatmentService.getAllTreatments(clinicId)
 
@@ -44,19 +46,11 @@ internal class TreatmentServiceTest {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class GetTreatmentById {
 
-    private val treatmentIdExist = 1
-
-    private val treatmentIdNotExist = 4
+    private val existingTreatmentId = dataStore.validId
 
     @BeforeEach
     internal fun setup() {
-
-      every { treatmentRepository.findById(treatmentIdExist) } returns dataStore.findTreatmentById(treatmentIdExist)
-
-      every { treatmentRepository.findById(treatmentIdNotExist) } returns dataStore.findTreatmentById(
-        treatmentIdNotExist
-      )
-
+      every { treatmentRepository.findById(existingTreatmentId) } returns dataStore.findTreatmentById(existingTreatmentId)
     }
 
     @AfterEach
@@ -67,9 +61,9 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should return TreatmentDto with given id, not blank name and fee greater or equal to 100`() {
 
-      val treatmentDto = treatmentService.getTreatmentById(treatmentIdExist)
+      val treatmentDto = treatmentService.getTreatmentById(existingTreatmentId)
 
-      assertThat(treatmentDto.id).isEqualTo(treatmentIdExist)
+      assertThat(treatmentDto.id).isEqualTo(existingTreatmentId)
 
       assertThat(treatmentDto.name).isNotBlank
 
@@ -80,18 +74,22 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should call TreatmentRepository to find Treatment by id`() {
 
-      treatmentService.getTreatmentById(treatmentIdExist)
+      treatmentService.getTreatmentById(existingTreatmentId)
 
-      verify(exactly = 1) { treatmentRepository.findById(treatmentIdExist) }
+      verify(exactly = 1) { treatmentRepository.findById(existingTreatmentId) }
 
     }
 
     @Test
     internal fun `should throw ResourceNotFoundException when no Treatment found with given id`() {
 
-      assertThatThrownBy { treatmentService.getTreatmentById(treatmentIdNotExist) }
+      val nonExistingTreatmentId = dataStore.invalidId
+
+      every { treatmentRepository.findById(nonExistingTreatmentId) } returns dataStore.findTreatmentById(nonExistingTreatmentId)
+
+      assertThatThrownBy { treatmentService.getTreatmentById(nonExistingTreatmentId) }
         .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Treatment found with id : $treatmentIdNotExist")
+        .hasMessage("No Treatment found with id : $nonExistingTreatmentId")
     }
 
   }
@@ -101,16 +99,14 @@ internal class TreatmentServiceTest {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class AddTreatment {
 
-    private val clinicId = 1
-
-    private val clinic = dataStore.findClinicById(clinicId).get()
+    private val clinicId = dataStore.validId
 
     private val newTreatment = dataStore.newTreatment()
 
     @BeforeEach
     internal fun setUp() {
 
-      every { clinicRepository.getReferenceById(clinicId) } returns clinic
+      every { clinicRepository.getReferenceById(clinicId) } returns dataStore.findClinicById(clinicId).get()
 
       every { treatmentRepository.save(ofType(Treatment::class)) } returns dataStore.saveTreatment(newTreatment)
     }
@@ -141,13 +137,26 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should return saved Treatment with generated id, given name and fee`() {
 
+      assumeThat(newTreatment.id).isNull()
+
       val treatmentDto = treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment))
 
-      assertThat(treatmentDto.id).isEqualTo(dataStore.newTreatmentId())
+      assertThat(treatmentDto.id).isNotNull
 
       assertThat(treatmentDto.name).isEqualTo(newTreatment.name)
 
       assertThat(treatmentDto.fee).isEqualTo(newTreatment.fee)
+
+    }
+
+    @Test
+    internal fun `should throw ResourceNotFoundException when TreatmentRepository save throw DataIntegrityViolationException`() {
+
+      every { treatmentRepository.save(ofType(Treatment::class)) }.throws(DataIntegrityViolationException("SQL Exception"))
+
+      assertThatThrownBy { treatmentService.addTreatment(clinicId, TreatmentDto(newTreatment)) }
+        .isInstanceOf(ResourceNotFoundException::class.java)
+        .hasMessage("No Clinic found with id : $clinicId")
 
     }
 
@@ -158,14 +167,14 @@ internal class TreatmentServiceTest {
   @TestInstance(TestInstance.Lifecycle.PER_CLASS)
   inner class UpdateTreatment {
 
-    private val treatmentId = 3
+    private val treatmentId = dataStore.validId
 
-    private val updatedTreatment = dataStore.findTreatmentById(treatmentId).get()
+    private val updatedTreatment = dataStore.createTreatment(treatmentId)
 
     @BeforeEach
     internal fun setup() {
 
-      every { treatmentRepository.existsById(treatmentId) } returns true
+      every { treatmentRepository.existsById(treatmentId) } returns dataStore.treatmentExistById(treatmentId)
 
       every { treatmentRepository.findById(treatmentId) } returns
           dataStore.findTreatmentById(treatmentId)
@@ -205,18 +214,27 @@ internal class TreatmentServiceTest {
 
     }
 
+  @Test
+  internal fun `should return updated TreatmentDto when update treatment is invoked`() {
+
+    val updatedTreatmentDto = treatmentService.updateTreatment(treatmentId, TreatmentDto(updatedTreatment))
+
+    assertThat(updatedTreatmentDto).isEqualTo(TreatmentDto(updatedTreatment.id, updatedTreatment.name, updatedTreatment.fee))
+
+  }
+
     @Test
     internal fun `should throw ResourceNotFoundException when Treatment does not exists`() {
 
-      val unknownTreatmentId = Int.MAX_VALUE
+      val nonExistingTreatmentId = dataStore.invalidId
 
-      every { treatmentRepository.existsById(unknownTreatmentId) } returns false
+      every { treatmentRepository.existsById(nonExistingTreatmentId) } returns false
 
       verify { treatmentRepository.save(updatedTreatment) wasNot Called }
 
-      assertThatThrownBy { treatmentService.updateTreatment(unknownTreatmentId, TreatmentDto(updatedTreatment)) }
+      assertThatThrownBy { treatmentService.updateTreatment(nonExistingTreatmentId, TreatmentDto(updatedTreatment)) }
         .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Treatment found with id : $unknownTreatmentId")
+        .hasMessage("No Treatment found with id : $nonExistingTreatmentId")
 
     }
 
@@ -230,9 +248,9 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should call TreatmentRepository to delete Treatment by id when Treatment exists`() {
 
-      val existingTreatmentId = 3
+      val existingTreatmentId = dataStore.validId
 
-      every { treatmentRepository.existsById(existingTreatmentId) } returns true
+      every { treatmentRepository.existsById(existingTreatmentId) } returns dataStore.treatmentExistById(existingTreatmentId)
 
       treatmentService.deleteTreatment(existingTreatmentId)
 
@@ -243,15 +261,15 @@ internal class TreatmentServiceTest {
     @Test
     internal fun `should throw ResourceNotFoundException when Treatment does not exists`() {
 
-      val unknownTreatmentId = 10
+      val nonExistingTreatmentId = dataStore.invalidId
 
-      every { treatmentRepository.existsById(unknownTreatmentId) } returns false
+      every { treatmentRepository.existsById(nonExistingTreatmentId) } returns dataStore.treatmentExistById(nonExistingTreatmentId)
 
-      verify(exactly = 0) { treatmentRepository.deleteById(unknownTreatmentId) }
+      verify(exactly = 0) { treatmentRepository.deleteById(nonExistingTreatmentId) }
 
-      assertThatThrownBy { treatmentService.deleteTreatment(unknownTreatmentId) }
+      assertThatThrownBy { treatmentService.deleteTreatment(nonExistingTreatmentId) }
         .isInstanceOf(ResourceNotFoundException::class.java)
-        .hasMessage("No Treatment found with id : $unknownTreatmentId")
+        .hasMessage("No Treatment found with id : $nonExistingTreatmentId")
 
     }
 
