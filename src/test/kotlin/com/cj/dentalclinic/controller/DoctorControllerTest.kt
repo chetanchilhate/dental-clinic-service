@@ -15,9 +15,9 @@ internal class DoctorControllerTest {
 
   private val doctorController = DoctorController(doctorService)
 
-  private val clinicId = 1
+  private val clinicId = dataStore.validId
 
-  private val doctorId = 1
+  private val doctorId = dataStore.validId
 
   private val doctorDto = DoctorDto(dataStore.newDoctor())
 
