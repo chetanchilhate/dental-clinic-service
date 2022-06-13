@@ -3,11 +3,13 @@ package com.cj.dentalclinic.entity
 import com.cj.dentalclinic.dto.PatientDto
 import com.cj.dentalclinic.dto.Sex
 import org.hibernate.Hibernate
+import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
 import javax.persistence.FetchType.LAZY
 import javax.persistence.GenerationType.IDENTITY
 
 @Entity
+@DynamicUpdate
 @Table(name = "t_patients")
 class Patient(
 
