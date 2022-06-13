@@ -1,7 +1,9 @@
 package com.cj.dentalclinic
 
+import com.cj.dentalclinic.dto.Sex
 import com.cj.dentalclinic.entity.Clinic
 import com.cj.dentalclinic.entity.Doctor
+import com.cj.dentalclinic.entity.Patient
 import com.cj.dentalclinic.entity.Treatment
 import io.github.serpro69.kfaker.Faker
 import java.util.*
@@ -72,8 +74,6 @@ class ClinicDataStore {
 
   private fun calculateParentIndex(id: Int?) = ((id ?: 1) % maxParentId)
 
-  private val doctors = mutableListOf<Doctor>()
-
   fun newTreatment() = createTreatment(null)
 
   fun saveTreatment(treatment: Treatment) =
@@ -98,6 +98,8 @@ class ClinicDataStore {
 /**
  * =====================================================================================================================
  */
+
+  private val doctors = mutableListOf<Doctor>()
 
   init {
     for (id in 1..maxId) {
@@ -140,5 +142,63 @@ class ClinicDataStore {
   fun doctorExistById(doctorId: Int): Boolean = doctors
     .stream()
     .anyMatch { it.id == doctorId }
+
+/**
+ * =====================================================================================================================
+ */
+
+  private val patients = mutableListOf<Patient>()
+
+  init {
+    for (id in 1..maxId) {
+      patients.add(createPatient(id))
+    }
+  }
+
+  fun createPatient(id: Int?): Patient {
+    return Patient(
+      id,
+      faker.name.firstName(),
+      "",
+      faker.name.lastName(),
+      randomAge(),
+      Sex.values()[randomOrdinal()],
+      faker.phoneNumber.cellPhone(),
+      faker.lorem.supplemental(),
+      doctors[calculateParentIndex(id)]
+    )
+  }
+
+  private fun randomAge() = random.nextInt(11, 100).toByte()
+
+  private fun randomOrdinal() = random.nextInt(0, 2)
+
+  fun newPatient() = createPatient(null)
+
+  fun savePatient(patient: Patient) = Patient(
+    randomIfNull(patient.id),
+    patient.firstName,
+    patient.middleName,
+    patient.lastName,
+    patient.age,
+    patient.sex,
+    patient.mobile,
+    patient.problem,
+    patient.doctor
+  )
+
+  fun findAllPatientsByDoctorId(doctorId: Int): List<Patient> = patients
+    .stream()
+    .filter { it.doctor.id == doctorId }
+    .toList()
+
+  fun findPatientById(patientId: Int): Optional<Patient> = patients
+    .stream()
+    .filter { it.id == patientId }
+    .findFirst()
+
+  fun patientExistById(patientId: Int): Boolean = patients
+    .stream()
+    .anyMatch { it.id == patientId }
 
 }
