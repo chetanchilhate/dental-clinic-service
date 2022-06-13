@@ -1,5 +1,6 @@
 package com.cj.dentalclinic.entity
 
+import com.cj.dentalclinic.dto.PatientDto
 import com.cj.dentalclinic.dto.Sex
 import org.hibernate.Hibernate
 import javax.persistence.*
@@ -12,7 +13,7 @@ class Patient(
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  val id: Int?,
+  val id: Int? = null,
 
   @Column(nullable = false)
   var firstName: String,
@@ -26,7 +27,7 @@ class Patient(
   @Column(nullable = false)
   var age: Byte,
 
-  @Column(nullable = false, columnDefinition="ENUM ('MALE', 'FEMALE', 'OTHER')")
+  @Column(nullable = false, columnDefinition = "ENUM ('MALE', 'FEMALE', 'OTHER')")
   @Enumerated(EnumType.STRING)
   var sex: Sex,
 
@@ -41,6 +42,28 @@ class Patient(
   val doctor: Doctor
 
 ) {
+
+  constructor(patientDto: PatientDto, doctor: Doctor) : this(
+    firstName = patientDto.firstName,
+    middleName = patientDto.middleName,
+    lastName = patientDto.lastName,
+    age = patientDto.age,
+    sex = patientDto.sex,
+    mobile = patientDto.mobile,
+    problem = patientDto.problem,
+    doctor = doctor
+  )
+
+  fun update(patientDto: PatientDto): Patient {
+    firstName = patientDto.firstName
+    middleName = patientDto.middleName
+    lastName = patientDto.lastName
+    age = patientDto.age
+    sex = patientDto.sex
+    mobile = patientDto.mobile
+    problem = patientDto.problem
+    return this
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
