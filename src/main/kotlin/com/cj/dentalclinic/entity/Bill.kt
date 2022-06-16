@@ -19,7 +19,7 @@ class Bill(
   @JoinColumn(name = "patient_id", nullable = false, updatable = false)
   private val patient: Patient,
 
-) {
+  ) {
 
   @Column(nullable = false, updatable = false)
   val createDateTime: LocalDateTime = LocalDateTime.now()
@@ -29,11 +29,11 @@ class Bill(
     get() = field
     private set
 
-  @OneToMany(mappedBy = "bill" ,cascade = [CascadeType.ALL], orphanRemoval = true)
+  @OneToMany(mappedBy = "bill", cascade = [CascadeType.ALL], orphanRemoval = true)
   val billLines: MutableSet<BillLine> = mutableSetOf()
 
   fun addBillLines(billLinesDto: List<BillLineDto>) {
-    billLinesDto.forEach{ addBillLine(it)}
+    billLinesDto.forEach { addBillLine(it) }
     total = billLinesDto.sumOf { it.fee }
   }
 
