@@ -7,6 +7,49 @@ import javax.persistence.*
 import javax.persistence.FetchType.LAZY
 import javax.persistence.GenerationType.IDENTITY
 
+
+const val query = """
+  SELECT tc.name                                                     AS clinicName,
+         CONCAT_WS(' ', td.first_name, td.middle_name, td.last_name) AS doctorFullName,
+         td.email                                                    AS doctorEmail,
+         td.qualification                                            AS doctorQualification,
+         CONCAT_WS(' ', tp.first_name, tp.middle_name, tp.last_name) AS patientFullName,
+         tp.age                                                      AS patientAge,
+         tp.sex                                                      AS patientSex,
+         tp.problem                                                  AS patientProblem,
+         tb.id                                                       AS billNo,
+         tb.create_date_time                                         AS billDateTime,
+         tb.total                                                    AS billTotal
+  FROM   t_clinics tc
+             INNER JOIN t_doctors td
+                        ON tc.id = td.clinic_id
+             INNER JOIN t_patients tp
+                        ON td.id = tp.doctor_id
+             INNER JOIN t_bills tb
+                        ON tp.id = tb.patient_id
+  WHERE  tb.id = ?1
+"""
+
+@NamedNativeQuery(name = "Bill.findBillDetailsById", query = query, resultSetMapping = "Mapping.BillDetailView")
+
+@SqlResultSetMapping(
+  name = "Mapping.BillDetailView",
+  classes = [ConstructorResult(
+    targetClass = BillDetailView::class,
+    columns = [ColumnResult(name = "clinicName"),
+      ColumnResult(name = "doctorFullName"),
+      ColumnResult(name = "doctorEmail"),
+      ColumnResult(name = "doctorQualification"),
+      ColumnResult(name = "patientFullName"),
+      ColumnResult(name = "patientAge"),
+      ColumnResult(name = "patientSex", type = String::class),
+      ColumnResult(name = "patientProblem"),
+      ColumnResult(name = "billNo"),
+      ColumnResult(name = "billDateTime", type = LocalDateTime::class),
+      ColumnResult(name = "billTotal")]
+  )]
+)
+
 @Entity
 @Table(name = "t_bills")
 class Bill(

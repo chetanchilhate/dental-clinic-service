@@ -25,7 +25,6 @@ class BillLine(
 ) {
 
   constructor(billLineDto: BillLineDto, bill: Bill) : this(
-    id = billLineDto.id,
     treatment = billLineDto.treatment,
     fee = billLineDto.fee,
     bill = bill
