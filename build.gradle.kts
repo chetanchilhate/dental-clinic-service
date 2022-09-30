@@ -39,7 +39,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("com.itextpdf:itext7-core:7.2.2")
   developmentOnly("org.springframework.boot:spring-boot-devtools")
-  runtimeOnly("mysql:mysql-connector-java")
+  runtimeOnly("org.postgresql:postgresql")
   runtimeOnly("org.bouncycastle:bcprov-jdk15on:1.70")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -52,6 +52,11 @@ tasks.withType<KotlinCompile> {
     freeCompilerArgs = listOf("-Xjsr305=strict")
     jvmTarget = "17"
   }
+}
+
+tasks.register<Copy>("copyJar") {
+  from("$buildDir/libs/my-report.pdf")
+  into("$buildDir/toArchive")
 }
 
 tasks.withType<Test> {

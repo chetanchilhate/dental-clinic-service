@@ -29,7 +29,7 @@ class Patient(
   @Column(nullable = false)
   var age: Byte,
 
-  @Column(nullable = false, columnDefinition = "ENUM ('MALE', 'FEMALE', 'OTHER')")
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   var sex: Sex,
 
