@@ -67,4 +67,4 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:postgresql://dpg-ccrin1pa6gdl22bl506g-a:5432/dental_clinic
+    url: jdbc:postgresql://dpg-ccrin1pa6gdl22bl506g-a.oregon-postgres.render.com:5432/dental_clinic
