@@ -13,18 +13,18 @@ DROP TABLE IF EXISTS t_clinics;
 DROP TYPE IF EXISTS t_sex;
 
 CREATE TABLE t_clinics
-(
-    id   SERIAL,
-    name VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-);
+  (
+      id   SERIAL,
+      name VARCHAR(255) NOT NULL,
+      PRIMARY KEY (id)
+  );
 
 
 CREATE TABLE t_treatments
 (
     id        SERIAL,
     name      VARCHAR(255) NOT NULL,
-    fee       NUMERIC      NOT NULL,
+    fee       DOUBLE PRECISION      NOT NULL,
     clinic_id INT          NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_clinic_treatment FOREIGN KEY (clinic_id) REFERENCES t_clinics (id)
@@ -64,7 +64,7 @@ CREATE TABLE t_bills
 (
     id               SERIAL,
     create_date_time TIMESTAMP NOT NULL DEFAULT NOW(),
-    total            NUMERIC   NOT NULL,
+    total            DOUBLE PRECISION   NOT NULL,
     patient_id       INT       NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_patient_bill FOREIGN KEY (patient_id) REFERENCES t_patients (id)
@@ -74,7 +74,7 @@ CREATE TABLE t_bill_lines
 (
     id        SERIAL,
     treatment VARCHAR(100) NOT NULL,
-    fee       NUMERIC      NOT NULL,
+    fee       DOUBLE PRECISION      NOT NULL,
     bill_id   INT          NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_bill_line FOREIGN KEY (bill_id) REFERENCES t_bills (id)
