@@ -2,17 +2,17 @@
 # Dental Clinic Service Properties
 # ===============================
 server:
-  port: 9090
+  port: ${SERVICE_PORT}
   shutdown: graceful
 
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-ccrin1pa6gdl22bl506g-a.oregon-postgres.render.com:5432/dental_clinic
-    username: root
-    password: Leue0BR6H7QopFSkPNFPl3mnOWQM0yb7
+    url: jdbc:postgresql://containers-us-west-86.railway.app:7970/dental_clinic
+    username: postgres
+    password: tvhakO9sMJLFOjmKmA38
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     show-sql: true
     properties:
@@ -59,12 +59,3 @@ management:
       enabled: true
     readinessState:
       enabled: true
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: docker
-  datasource:
-    url: jdbc:postgresql://dpg-ccrin1pa6gdl22bl506g-a.oregon-postgres.render.com:5432/dental_clinic

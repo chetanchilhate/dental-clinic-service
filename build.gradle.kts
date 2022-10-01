@@ -16,7 +16,7 @@ allOpen {
 }
 
 group = "com.cj"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -52,11 +52,6 @@ tasks.withType<KotlinCompile> {
     freeCompilerArgs = listOf("-Xjsr305=strict")
     jvmTarget = "17"
   }
-}
-
-tasks.register<Copy>("copyJar") {
-  from("$buildDir/libs/my-report.pdf")
-  into("$buildDir/toArchive")
 }
 
 tasks.withType<Test> {

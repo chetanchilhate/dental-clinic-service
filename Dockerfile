@@ -6,8 +6,8 @@ RUN gradle clean build -x test --no-daemon
 
 
 FROM eclipse-temurin:17-alpine
-EXPOSE 9090
-COPY --from=builder /usr/tmp/build/libs/dental-clinic-service-0.0.1-SNAPSHOT.jar /usr/app/
+EXPOSE 8080
+COPY --from=builder /usr/tmp/build/libs/dental-clinic-service-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "dental-clinic-service-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-Dserver.port=${SERVICE_PORT}", "-Dspring.profiles.active=${ACTIVE_PROILE}", "-jar", "dental-clinic-service-0.0.1.jar"]
