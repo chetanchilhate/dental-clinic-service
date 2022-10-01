@@ -2,7 +2,7 @@ FROM gradle:7.5.1-jdk17-alpine AS builder
 
 COPY . /usr/tmp
 WORKDIR /usr/tmp
-RUN gradle clean build -x test --no-daemon
+RUN gradle build -x test --no-daemon
 
 
 FROM eclipse-temurin:17-alpine
