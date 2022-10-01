@@ -7,9 +7,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://containers-us-west-86.railway.app:7970/dental_clinic
-    username: postgres
-    password: tvhakO9sMJLFOjmKmA38
+    url: jdbc:postgresql://dpg-ccru7acgqg48cgskv8e0-a.oregon-postgres.render.com:5432/dental_clinic_fazq
+    username: posclinic
+    password: b1KxRjWUzeGKJBgELfVduirFhIb9nTJ4
   jpa:
     hibernate:
       ddl-auto: validate
@@ -59,3 +59,15 @@ management:
       enabled: true
     readinessState:
       enabled: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: render
+  datasource:
+    url: jdbc:postgresql://dpg-ccru7acgqg48cgskv8e0-a:5432/dental_clinic_fazq
+    username: posclinic
+    password: b1KxRjWUzeGKJBgELfVduirFhIb9nTJ4
+
