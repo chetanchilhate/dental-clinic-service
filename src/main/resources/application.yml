@@ -65,6 +65,15 @@ management:
 spring:
   config:
     activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://dc-postgres:5432/dental_clinic
+
+---
+
+spring:
+  config:
+    activate:
       on-profile: railway
   datasource:
     url: jdbc:postgresql://containers-us-west-86.railway.app:7970/dental_clinic
