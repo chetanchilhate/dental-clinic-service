@@ -80,7 +80,6 @@ class PDFGenerator {
           0,
           3
         ).add(Paragraph(billDetailDto.billDetail.patientProblem))
-//          Paragraph(""))
           .setBorder(
             Border.NO_BORDER
           )
