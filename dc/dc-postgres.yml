@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+      
+  
+  dc-postgres:
+    container_name: dc-postgres
+    restart: always
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    environment:
+    - POSTGRES_PASSWORD=toor
+    - POSTGRES_DB=dental_clinic
+    - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - 'postgres-data:/var/lib/postgresql/data/pgdata'
+
+
+volumes:
+  postgres-data:
+    external: true
