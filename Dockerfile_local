@@ -1,6 +1,8 @@
-FROM eclipse-temurin:17-alpine
+FROM eclipse-temurin:17-jre-alpine
 EXPOSE 8080
-COPY ./build/libs/dental-clinic-service-0.0.1.jar /usr/app/
+RUN addgroup --system javauser && adduser -S -s /bin/false -G javauser javauser
+COPY ./build/libs/*.jar /usr/app/main.jar
 WORKDIR /usr/app
-
-ENTRYPOINT ["java", "-Dserver.port=${SERVICE_PORT}", "-Dspring.profiles.active=${ACTIVE_PROILE}", "-jar", "dental-clinic-service-0.0.1.jar"]
+RUN chown -R javauser:javauser /usr/app
+USER javauser
+ENTRYPOINT ["java", "-Dserver.port=${SERVICE_PORT}", "-Dspring.profiles.active=${ACTIVE_PROILE}", "-jar", "main.jar"]

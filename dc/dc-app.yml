@@ -19,9 +19,9 @@ services:
   
   dc-dental-clinic-service:
     container_name: dc-dental-clinic-service
-    image: dental-clinic-service:latest
+    image: chetanchilhate/dental-clinic-service:v1
     ports:
-    - 8082:8080
+    - 8080:8080
     environment:
       - SERVICE_PORT=8080
       - ACTIVE_PROILE=docker

@@ -7,7 +7,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/dental_clinic
+    url: jdbc:postgresql://localhost:5432/dental_clinic?stringtype=unspecified
     username: postgres
     password: toor
   jpa:
@@ -67,7 +67,7 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:postgresql://dc-postgres:5432/dental_clinic
+    url: jdbc:postgresql://dc-postgres:5432/dental_clinic?stringtype=unspecified
 
 ---
 
@@ -76,7 +76,7 @@ spring:
     activate:
       on-profile: railway
   datasource:
-    url: jdbc:postgresql://containers-us-west-86.railway.app:7970/dental_clinic
+    url: jdbc:postgresql://containers-us-west-86.railway.app:7970/dental_clinic?stringtype=unspecified
     username: postgres
     password: tvhakO9sMJLFOjmKmA38
 
@@ -87,6 +87,6 @@ spring:
     activate:
       on-profile: render
   datasource:
-    url: jdbc:postgresql://dpg-ccru7acgqg48cgskv8e0-a:5432/dental_clinic_fazq
+    url: jdbc:postgresql://dpg-ccru7acgqg48cgskv8e0-a:5432/dental_clinic_fazq?stringtype=unspecified
     username: posclinic
     password: b1KxRjWUzeGKJBgELfVduirFhIb9nTJ4

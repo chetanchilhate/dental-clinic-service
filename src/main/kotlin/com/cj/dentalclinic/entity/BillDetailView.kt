@@ -8,7 +8,7 @@ open class BillDetailView(
   val doctorEmail: String,
   val doctorQualification: String,
   val patientFullName: String,
-  val patientAge: Byte,
+  val patientAge: Short,
   val patientSex: String,
   val patientProblem: String,
   val billNo: Int,
