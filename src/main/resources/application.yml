@@ -87,6 +87,6 @@ spring:
     activate:
       on-profile: render
   datasource:
-    url: jdbc:postgresql://dpg-ccru7acgqg48cgskv8e0-a:5432/dental_clinic_fazq?stringtype=unspecified
-    username: posclinic
-    password: b1KxRjWUzeGKJBgELfVduirFhIb9nTJ4
+    url: jdbc:postgresql://dpg-ccspc6sgqg48cgtobqag-a:5432/dental_clinic_z333?stringtype=unspecified
+    username: postgres4
+    password: UGZUbSbyM8lDbRKikCdh5AKXuF8NU4aS
