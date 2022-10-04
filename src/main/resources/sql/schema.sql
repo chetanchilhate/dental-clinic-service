@@ -79,3 +79,5 @@ CREATE TABLE t_bill_lines
     PRIMARY KEY (id),
     CONSTRAINT fk_bill_line FOREIGN KEY (bill_id) REFERENCES t_bills (id)
 );
+
+SELECT setval('t_bills_id_seq', 1000, true);
